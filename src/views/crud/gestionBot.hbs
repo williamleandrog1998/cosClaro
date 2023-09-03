@@ -1,0 +1,69 @@
+<head>
+
+    <title>Cargador Base</title>
+
+</head>
+
+<div class="content content-page">
+    <div class="container-fluid">
+        {{!-- Titulo pagina --}}
+        <div class="row">
+            <div class="col-12">
+                <div class="page-title-box">
+                    <h4 class="page-title">Cargador de Archivo (EXCEL)</h4>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    {{> message }}
+                    <div class="form-row">
+
+                        <div class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12  tts enBlanco exepcion1"
+                            style="border: #ffcccc 10px outset;">
+                            <h4>
+                                <center>SELECCIONE EL ARCHIVO EN FORMATO (EXCEL)</center>
+                            </h4>
+                            <div class="input-group">
+                                <input type="file" class="form-control-file" name='archivos_excel' id="inpFileEXC">
+                            </div>
+                            </br>
+                            <div class="text-center">
+                                
+                                {{!-- <div id="errorContainer">error en las columnas: <p id="errores"></p></div> --}}
+                                <center>
+                                    <span class="btn btn-secondary" id="btnRegistrarEXC">
+                                        <iclass="far fa-file-excel"></i> Cargar
+                                    </span>
+                                </center>
+                            </div></br>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="modal" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="successModalLabel"></h5>
+                <div id="errorContainer"><p id="errores"></p></div>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="js/tuya/cargador.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+{{!-- <script src="js/reporting/usuarios_diponibles.js"></script> --}}
+{{!-- <script src="js/reporting/flujos_disponibles.js"></script> --}}

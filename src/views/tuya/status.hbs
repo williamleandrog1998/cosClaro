@@ -1,0 +1,56 @@
+<head>
+
+  <title>Status Bot</title>
+
+</head>
+
+<div class="content content-page">
+  <div class="container-fluid">
+      {{!-- Titulo pagina --}}
+      <div class="row">
+          <div class="col-12">
+              <div class="page-title-box">
+                  <h4 class="page-title">Estado registro de empleados</h4>
+              </div>
+          </div>
+      </div>     
+      {{!-- Fin Titulo pagina --}}
+
+      <div class="row">
+             <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        {{!-- Tabla Status --}}
+                        <div class="table-responsive">
+                            <table id="Reporte_Status" class="table table-striped dt-responsive nowrap" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th><center>ID</center></th>
+                                        <th><center>EMPLEADO</center></th>
+                                        <th><center>ARCHIVO CARGADO</center></th>
+                                        <th><center>FECHA REGISTRO</center></th>
+                                        <th><center>ESTADO</center></th>                                        
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {{#each users}}
+                                    <tr>
+                                        <td><center>{{PKSTA_NCODIGO}}</center></td>
+                                        <td><center>{{STA_CEMPLEADO}}</center></td>
+                                        <td><center>{{STA_CARCHIVO_CARGADO}}</center></td>
+                                        <td><center>{{STA_CFECHA_REGISTRO}}</center></td>
+                                        <td><center>{{STA_CESTADO}}</center></td>                                     
+                                    </tr>
+                                    {{/each}}
+                                </tbody>
+                            </table>
+                        </div>
+                        {{!-- Fin Tabla Status --}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="js/reporting/datatable_status.js"></script>
