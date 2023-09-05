@@ -1,10 +1,5 @@
 const insertInfo = require('../routes/tuya/routProcesos')
 
-
-
-
-
-
 async function validateData(req) {
     try {
         const expectedKeys = [
@@ -87,7 +82,6 @@ async function validateData(req) {
 // Uso de la función
 // const isValid = await validateData(req);
 // console.log(isValid); // Mostrará true si todos los objetos en el arreglo tienen las claves esperadas, false si no
-
 
 async function prepareData(req){
 
@@ -180,11 +174,6 @@ async function prepareData(req){
         }
 
         return dataToInsert;
-        // console.log(req)
-        // console.log(req.Trato)
-        // console.log(req['País de nacimiento'])
-        
-        // console.log(req[0]['Motivo del evento'])
         
     }catch(err){
         throw err

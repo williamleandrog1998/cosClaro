@@ -9,6 +9,8 @@ const { database } = require('./keys');
 const passport = require('passport');
 const { Server } = require('socket.io')
 const http = require('http');
+const { exec } = require('child_process');
+
 
 //Inicializaciones.........................
 const app = express();
@@ -80,6 +82,7 @@ app.use(require('./routes'));
 app.use(require('./routes/authentication'));
 app.use(require('./routes/crud'));
 app.use(require('./routes/tuya/routProcesos'));
+app.use(require('./routes/tuya/routInicioBot'))
 app.use(require('./routes/tuya/routGeneral'));
 
 
@@ -96,16 +99,13 @@ app.use((req, res, next) => {
     res.status(404).render('404');
 });
 
+//inicializacion .py
+const pythonScript = './src/python/inicioSesion.py';
+exec(`python ${pythonScript}`, (error, stdout, stderr) => {
+  if (error) {
+    console.error(`Error al ejecutar el archivo Python: ${error}`);
+    return;
+  }
+  console.log(`Salida del archivo Python: ${stdout}`);
+});
 
-
-// const { exec } = require('child_process');
-// // Reemplaza 'archivo_python.py' con la ruta al archivo Python que deseas ejecutar.
-// const pythonScript = '/python/inicio.py';
-
-// exec(`python ${pythonScript}`, (error, stdout, stderr) => {
-//   if (error) {
-//     console.error(`Error al ejecutar el archivo Python: ${error}`);
-//     return;
-//   }
-//   console.log(`Salida del archivo Python: ${stdout}`);
-// });

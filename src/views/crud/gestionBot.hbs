@@ -5,7 +5,7 @@
 </head>
 
 <div class="content content-page">
-    <div class="container-fluid">
+    <div class="container-fluid m-5">
         {{!-- Titulo pagina --}}
         <div class="row">
             <div class="col-12">
@@ -16,38 +16,52 @@
         </div>
 
         <div class="col-12">
-            <div class="card">
-                <div class="card-body">
-                    {{> message }}
-                    <div class="form-row">
-
-                        <div class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12  tts enBlanco exepcion1"
-                            style="border: #ffcccc 10px outset;">
-                            <h4>
-                                <center>SELECCIONE EL ARCHIVO EN FORMATO (EXCEL)</center>
-                            </h4>
-                            <div class="input-group">
-                                <input type="file" class="form-control-file" name='archivos_excel' id="inpFileEXC">
-                            </div>
-                            </br>
-                            <div class="text-center">
-                                
-                                {{!-- <div id="errorContainer">error en las columnas: <p id="errores"></p></div> --}}
-                                <center>
+            <div class="container">
+                <div class="card mx-auto">
+                    <div class="card-body">
+                        {{> message }}
+                        <div class="form-row">
+                            <div class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12 tts enBlanco exepcion1"
+                                style="border: #ffcccc 10px outset;">
+                                <h4>
+                                    <center>SELECCIONE EL ARCHIVO EN FORMATO (EXCEL)</center>
+                                </h4>
+                                <div class="input-group">
+                                    <input type="file" class="form-control-file" name='archivos_excel' id="inpFileEXC">
+                                </div>
+                                <br>
+                                <div class="text-center">
+                                    {{!-- <div id="errorContainer">error en las columnas: <p id="errores"></p></div> --}}
                                     <span class="btn btn-secondary" id="btnRegistrarEXC">
-                                        <iclass="far fa-file-excel"></i> Cargar
+                                        <i class="far fa-file-excel"></i> Cargar
                                     </span>
-                                </center>
-                            </div></br>
-                            
+                                </div>
+                                <br>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
+
+
     </div>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12 d-flex justify-content-end align-items-center">
+                    <button class="btn btn-robot animate__animated animate__pulse animate-move" id="btnInicioBot">
+                        <i class="fas fa-robot"></i> <!-- Icono de robot, reemplázalo según tu preferencia -->
+                    </button>
+                </div>
+            </div>
+        </div>
+
+
+
+
 </div>
+
 
 <div class="modal" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -62,8 +76,78 @@
         </div>
     </div>
 </div>
+<style>
+    /* Estilo personalizado para el botón */
+    .btn-robot {
+        border-radius: 5%;
+        background-color: #fc0808; /* Color de fondo */
+        color: #fff; /* Color del texto */
+        border: 2px solid #ebb7b7; /* Borde */
+        font-size: 35px; /* Tamaño de fuente */
+        padding: 20px 40px; /* Relleno (padding) para ajustar el tamaño */
+        cursor: pointer; /* Cambia el cursor al pasar el mouse */
+        overflow: hidden; /* Oculta el desbordamiento del contenido */
+        position: relative; /* Permite posicionar el seudoelemento ::before */
+    }
+
+    /* Efecto de ondas */
+    .btn-robot::before {
+        
+        content: "";
+        position: absolute;
+        background: radial-gradient(transparent 5%, rgba(1, 7, 14, 0.3) 20%);
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        transform: scale(0);
+        opacity: 0;
+        animation: waves 2s infinite; /* Animación de ondas */
+    }
+
+    /* Animación de ondas */
+    @keyframes waves {
+        0% {
+            transform: scale(0);
+            opacity: 0.5;
+        }
+        50% {
+            transform: scale(1);
+            opacity: 0;
+        }
+        100% {
+            transform: scale(2);
+            opacity: 0;
+        }
+    }
+
+    /* Animación de movimiento */
+    @keyframes growShrink {
+        0% {
+            transform: scale(1); /* Tamaño normal */
+        }
+        25% {
+            transform: scale(1.01); /* Tamaño 5% más grande */
+        }
+        50% {
+            transform: scale(1.02); /* Tamaño 5% más grande */
+        }
+        75% {
+            transform: scale(1.01); /* Tamaño 5% más grande */
+        }
+        100% {
+            transform: scale(1); /* Tamaño 5% más grande */
+        }
+    }
+
+    /* Aplicar la animación de movimiento al botón */
+    .animate-move {
+        animation: growShrink 2s infinite; /* La animación se repite infinitamente */
+    }
+</style>
 
 <script src="js/tuya/cargador.js"></script>
+<script src="js/tuya/inicioBot.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 {{!-- <script src="js/reporting/usuarios_diponibles.js"></script> --}}
 {{!-- <script src="js/reporting/flujos_disponibles.js"></script> --}}

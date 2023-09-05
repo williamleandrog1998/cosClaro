@@ -9,52 +9,6 @@ const fileUpload = require("express-fileupload");
 const axios = require('axios');
 const file_upload = fileUpload();
 const sentences = require('../../queries/main.query');
-// const conn = require('../../database.js');
-// const { error } = require("console");
-// Cargar Excel 
-
-// router.post("/cargar", isLoggedIn, file_upload, async(req,res)=>{
-//     // Ejemplo de controlador en Express.js 
-//     if (!req.files || !req.files.archivos_excel) {
-//         return res.status(400).json({ error: 'No se cargó ningún archivo.' });
-//     }else{
-//         const archivo = req.files.archivos_excel;
-//         const filePath = __dirname+`/${archivo.name}`;
-    
-//         archivo.mv(filePath, async(err) => {
-//             if (err) {
-//                 return res.status(500).json({ error: err.message });
-//             }else{
-//                 try{
-//                     const workbook = xlsx.readFile(filePath);
-//                     const sheetName = workbook.SheetNames[0];
-//                     const data = xlsx.utils.sheet_to_json(workbook.Sheets[sheetName]);
-
-//                     const isValid = await sentences.validateData(data);
-//                     console.log(isValid.isValid)
-//                     if (!isValid.isValid) {
-//                         console.log(isValid.invalidObjects)
-//                         // return res.status(400).json({ error: 'El JSON no cumple con la estructura esperada.' });
-//                         res.json(isValid.invalidObjects[0])
-//                         return
-//                         // res.status(400).json({ error: 'El JSON no cumple con la estructura esperada.' });
-//                     }
-//                     const nextStep = insertInfo(isValid.data);//true
-//                     console.log(nextStep)
-//                     if(nextStep){
-//                         res.json(true);
-//                     }else{
-//                         res.json(false);
-//                     }
-//                 // Aquí puedes manejar los datos como desees y enviar una respuesta
-                    
-//                 }catch(err){
-//                     console.error('error en carga del excel, debido a: '+err)
-//                 }
-//             }
-//         }); 
-//     }  
-// })
 
 router.post("/cargar", isLoggedIn, file_upload, async (req, res) => {
     if (!req.files || !req.files.archivos_excel) {
@@ -134,30 +88,6 @@ async function insertInfo(data) {
         return false;
     }
 }
-// async function insertInfo(data) {
-//     try {
-//         console.log('insertInfo')
-//         for(i=0;i<data.length;i++){
-//             const dataInsert = await sentences.prepareData(data[i])
-//             const query = "INSERT INTO tbl_rcontratacion SET ?";
-//             pool.query(query, dataInsert, (error, results) => {
-    
-//                 if (error) {
-//                     console.error("Error al ejecutar la consulta:", error);
-//                     return false;
-//                 }else {
-//                     console.log('*')
-//                     console.log("Inserción exitosa:", results);
-//                     return true;
-//                 }
-//             });
-//         }  
-//         console.log('**')
-//         return false
-//     }catch (error) {
-//         console.error(`error en inserInfo debido a: ${error}`)
-//     }
-// }
 
 router.post("/cargarexceltts", isLoggedIn, file_upload, async (req, res) => {
     try {
@@ -502,4 +432,3 @@ function cargarExcelBid(scriptPath, nombreProceso, usuarioInfobip, flujo, proces
 }
 
 module.exports = router;
-// module.exports = insertInfo;
