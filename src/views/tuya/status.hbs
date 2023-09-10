@@ -1,6 +1,6 @@
 <head>
 
-  <title>Status Bot</title>
+  <title>Administrar bot</title>
 
 </head>
 
@@ -10,42 +10,45 @@
       <div class="row">
           <div class="col-12">
               <div class="page-title-box">
-                  <h4 class="page-title">Estado registro de empleados</h4>
+                  <h4 class="page-title">Administración inicio de sesión del bot</h4>
               </div>
           </div>
       </div>     
       {{!-- Fin Titulo pagina --}}
-
+      {{!-- Formulario Front Negocios --}}
       <div class="row">
              <div class="col-12">
                 <div class="card">
                     <div class="card-body">
-                        {{!-- Tabla Status --}}
+                        {{> message }}                                                         
+                        {{!-- Tabla Listar Usuarios --}}
                         <div class="table-responsive">
-                            <table id="Reporte_Status" class="table table-striped dt-responsive nowrap" style="width:100%">
+                            <table id="Reporte_Admin_Usuarios" class="table table-striped">
                                 <thead>
                                     <tr>
                                         <th><center>ID</center></th>
-                                        <th><center>EMPLEADO</center></th>
-                                        <th><center>ARCHIVO CARGADO</center></th>
-                                        <th><center>FECHA REGISTRO</center></th>
-                                        <th><center>ESTADO</center></th>                                        
+                                        <th><center>NOMBRE</center></th>
+                                        <th><center>IDENTIFICACIÓN</center></th>
+                                         <th><center>RESPONSABLE</center></th>
+                                        <th><center>ESTADO</center></th>  
+                                        <th><center>FECHA REGISTRO</center></th>                                   
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody class="text-center">
                                     {{#each users}}
                                     <tr>
-                                        <td><center>{{PKSTA_NCODIGO}}</center></td>
-                                        <td><center>{{STA_CEMPLEADO}}</center></td>
-                                        <td><center>{{STA_CARCHIVO_CARGADO}}</center></td>
-                                        <td><center>{{STA_CFECHA_REGISTRO}}</center></td>
-                                        <td><center>{{STA_CESTADO}}</center></td>                                     
+                                        <td>{{PKUSU_NCODIGO}}</td>
+                                        <td>{{USU_CNOMBRE_USUARIO}}</td> 
+                                        <td>{{USU_CNUMERO_DOCUMENTO}}</td>
+                                        <td>{{USU_CTIPO_DOCUMENTO}}</td>
+                                        <td>{{USU_CESTADO}}</td>
+                                        <td>{{USU_CFECHA_INGRESO}}</td>
                                     </tr>
                                     {{/each}}
                                 </tbody>
                             </table>
                         </div>
-                        {{!-- Fin Tabla Status --}}
+                        {{!-- Fin Tabla Listar Usuarios --}}
                     </div>
                 </div>
             </div>
@@ -53,4 +56,4 @@
     </div>
 </div>
 
-<script src="js/reporting/datatable_status.js"></script>
+<script src="js/reporting/datatable_admin.js"></script>

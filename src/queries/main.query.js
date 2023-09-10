@@ -7,11 +7,13 @@ async function validateData(req) {
             'apellidos', 'trato', 'fechadenacimiento', 'paisdenacimiento',
             'departamentodenacimiento', 'ciudaddenacimiento', 'nombredeusuario',
             'paisdeexpedicion', 'tipodedocumento', 'numerodedocumento', 'esprimario',
-            'fechadeexpedicion', 'departamentodeexpedicion', 'genero', 'estadocivil',
+            'fechadeexpedicion', 'departamentodeexpedicion', 'ciudaddeexpedicion', 'genero', 'estadocivil',
             'nacionalidad', 'lenguanativa', 'configuracionregionalpredeterminada',
-            'mododedesplazamientocasatrabajocasa', 'pais/region', 'tipodedireccion',
-            'pais/region_1', 'departamento', 'ciudad', 'estrato', 'tipodevivienda',
-            'posicion', 'fechainicialdeposicion', 'empresa_1', 'direccioncomite',
+            'mododedesplazamientocasatrabajocasa', 'pais/region', 'tipodecorreo', 'correo', 'esprimario_1', 'tipodetelefono', 'numerodetelefono', 'tipodedireccion',
+            'pais/region_1', 'departamento', 'ciudad', 'estrato', 'tipodevivienda', 'contactodeemergencia', 'parentesco', 'movil',
+            'nombresdelfamiliar', 'apellidosdelfamiliar', 'parentescodelfamiliar', 'viveconusted',
+            'dependedeusted', 'estudiaactualmente', 'estadodediscapacidad', 'generodelfamiliar',
+            'fechadenacimientodelfamiliar', 'posicion', 'fechainicialdeposicion', 'empresa_1', 'direccioncomite',
             'direccionarea', 'gerencia/direccion', 'ubicacion', 'centrodecosto',
             'pais', 'idjefeinmediato', 'nivelderemuneracion', 'codigocargo',
             'regular/temporal', 'estadodeocupacion', 'tiempocompleto', 'grupodepersonal',
@@ -26,21 +28,21 @@ async function validateData(req) {
             'valor', 'moneda', 'frecuencia'
         ];
 
-        function normalizeString(str) {
-            return str
+        function normalizeString(str) { //2
+                return str
                 .normalize('NFD')
                 .replace(/[\u0300-\u036f]/g, '') // Remover tildes
                 .replace(/[^\w\s]/gi, '') // Remover caracteres especiales
                 .toLowerCase() // Convertir a minúsculas
-                .replace(/\s+/g, ''); // Remover espacios
+                .replace(/\s+/g, ''); // Remover espacio
         }
 
-        const jsonData = req.map(obj =>
+        const jsonData = req.map(obj => //1
             Object.fromEntries(Object.entries(obj).map(([key, value]) => [normalizeString(key), value]))
         );
-        // console.log(jsonData)
 
-        if (!Array.isArray(jsonData)) {
+
+        if (!Array.isArray(jsonData)) {//3
             return {
                 isValid: false,
                 missingKeys: expectedKeys
@@ -49,7 +51,7 @@ async function validateData(req) {
 
         const invalidObjects = [];
 
-        for (let i = 0; i < jsonData.length; i++) {
+        for (let i = 0; i < jsonData.length; i++) {//4
             const actualKeys = Object.keys(jsonData[i]);
             const normalizedActualKeys = actualKeys.map(normalizeString);
             var missingKeys = expectedKeys.filter(key => !normalizedActualKeys.includes(normalizeString(key)));
@@ -60,7 +62,7 @@ async function validateData(req) {
                     missingKeys: missingKeys
                 });
             }
-        }
+        } 
 
         if (invalidObjects.length > 0) {
 
@@ -86,16 +88,49 @@ async function validateData(req) {
 async function prepareData(req){
 
     try{
+
+        function formatFecha(fecha) {
+            // Dividir la fecha en día, mes, y año
+            const dateParts = fecha.split('/');
+            const dia = dateParts[0] || '';
+            const mes = dateParts[1] || '';
+            const año = dateParts[2] || '';
+        
+            // Formatear la fecha en el formato deseado: DDMMYYYY
+            return dia.padStart(2, '0') + mes.padStart(2, '0') + año;
+        }
+
+          // Verificar si 'fechadeingreso' existe y es una cadena
+          const fechaIngreso = req['fechadeingreso'] && typeof req['fechadeingreso'] === 'string'
+          ? formatFecha(req['fechadeingreso'])
+          : req['fechadeingreso'];
+
+          const fechadeNacimiento = req['fechadenacimiento'] && typeof req['fechadenacimiento'] === 'string'
+          ? formatFecha(req['fechadenacimiento'])
+          : req['fechadenacimiento'];
+
+          const fechaFinPeriodoDePrueba = req['fechafinperiododeprueba'] && typeof req['fechafinperiododeprueba'] === 'string'
+          ? formatFecha(req['fechafinperiododeprueba'])
+          : req['fechafinperiododeprueba'];
+
+          const fechadeExpedicion = req['fechadeexpedicion'] && typeof req['fechadeexpedicion'] === 'string'
+          ? formatFecha(req['fechadeexpedicion'])
+          : req['fechadeexpedicion'];
+
+          const fechaInicialDeposicion = req['fechainicialdeposicion'] && typeof req['fechainicialdeposicion'] === 'string'
+          ? formatFecha(req['fechainicialdeposicion'])
+          : req['fechainicialdeposicion'];
+
         
         const dataToInsert = {
-            USU_CFECHA_INGRESO: req['fechadeingreso'],
+            USU_CFECHA_INGRESO: fechaIngreso,
             USU_CEMPRESA: req.empresa,
             USU_CMOTIVO_EVENTO: req['motivodelevento'],
             USU_CPLANTILLA: req.plantilla, 
             USU_CNOMBRES: req.nombres, 
             USU_CAPELLIDOS: req.apellidos, 
             USU_CTRATO: req.trato, 
-            USU_CFECHA_NACIMIENTO: req['fechadenacimiento'], 
+            USU_CFECHA_NACIMIENTO: fechadeNacimiento, 
             USU_CPAIS_NACIMIENTO: req['paisdenacimiento'],
             USU_CDEPARTAMENTO_NACIMIENTO: req['departamentodenacimiento'], 
             USU_CCIUDAD_NACIMIENTO: req['ciudaddenacimiento'],
@@ -104,8 +139,9 @@ async function prepareData(req){
             USU_CTIPO_DOCUMENTO: req['tipodedocumento'], 
             USU_CNUMERO_DOCUMENTO: req['numerodedocumento'], 
             USU_CES_PRIMARIO: req['esprimario'], 
-            USU_CFECHA_EXPEDICION: req['fechadeexpedicion'], 
+            USU_CFECHA_EXPEDICION: fechadeExpedicion, 
             USU_CDEPARTAMENTO_EXPEDICION: req['departamentodeexpedicion'], 
+            USU_CCIUDAD_EXPEDICION: req['ciudaddeexpedicion'], 
             USU_CGENERO: req['genero'],  
             USU_CESTADO_CIVIL: req['estadocivil'],  
             USU_CNACIONALIDAD: req.nacionalidad,  
@@ -113,14 +149,34 @@ async function prepareData(req){
             USU_CCONFIGURACION_REGIONAL_PREDETERMINADA: req['configuracionregionalpredeterminada'],  
             USU_CMODO_DESPLAZAMIENTO_CASA_TRABAJO_CASA: req['mododedesplazamientocasatrabajocasa'],
             USU_CPAIS_REGION: req['paisregion'],  
+            USU_CTIPO_CORREO: req['tipodecorreo'],  
+            USU_CCORREO: req['correo'],  
+            USU_ES_PRIMARIO: req['esprimario_1'],
+            USU_CTIPO_TELEFONO: req['tipodetelefono'],
+            USU_CNUMERO_TELEFONO: req['numerodetelefono'],
             USU_CTIPO_DIRECCION: req['tipodedireccion'],  
             USU_PAIS_REGION: req['paisregion_1'],
             USU_CDEPARTAMENTO: req.departamento,  
             USU_CCIUDAD: req.ciudad,  
             USU_CESTRATO: req.estrato,  
-            USU_CTIPO_VIVIENDA: req['tipodevivienda'],  
+            USU_CTIPO_VIVIENDA: req['tipodevivienda'], 
+            USU_CCONTACTO_EMERGENCIA: req['contactodeemergencia'],
+            USU_CPARENTESCO_EMERGENCIA: req['parentesco'],
+            USU_CMOVIL_EMERGENCIA: req['movil'],
+            USU_CNOMBRES_FAMILIAR: req['nombresdelfamiliar'],
+            USU_CAPELLIDOS_FAMILIAR: req['apellidosdelfamiliar'],
+            USU_CPARENTESCO_FAMILIAR: req['parentescodelfamiliar'],
+            USU_CVIVE_USTED_FAMILIAR: req['viveconusted'],
+            USU_CDEPENDE_USTED_FAMILIAR: req['dependedeusted'],
+            USU_CESTUDIA_FAMILIAR: req['estudiaactualmente'],
+            USU_CDISCAPACIDAD_FAMILIAR: req['estadodediscapacidad'],
+            USU_CLUGAR_EMISION: req['lugardeemision'],
+            USU_CAUTORIDAD_EMISORA: req['autoridademisora'],
+            USU_CFECHA_CADUCIDAD: req['fechadecaducidad'],
+            USU_CGENERO_FAMILIAR: req['generodelfamiliar'],
+            USU_CFECHA_NACIMIENTO_FAMILIAR: req['fechadenacimientodelfamiliar'],
             USU_CPOSICION: req['posicion'],  
-            USU_CFECHA_INICIAL_POSICION: req['fechainicialdeposicion'],   
+            USU_CFECHA_INICIAL_POSICION: fechaInicialDeposicion,   
             USU_EMPRESA: req.empresa,  
             USU_CDIRECCION_COMITE: req['direccioncomite'],   
             USU_CDIRECCION_AREA: req['direccionarea'], 
@@ -137,7 +193,7 @@ async function prepareData(req){
             USU_CGRUPO_PERSONAL: req['grupodepersonal'],
             USU_CAREA_PERSONAL: req['areadepersonal'],  
             USU_CPERFIL_TIEMPOS: req['perfildetiempos'],    
-            USU_CFECHA_FIN_PERIODO_PRUEBA: req['fechafinperiododeprueba'],  
+            USU_CFECHA_FIN_PERIODO_PRUEBA: fechaFinPeriodoDePrueba,  
             USU_CAPLICA_RED_MAESTRA: req['aplicaredmaestra'],  
             USU_CTIPO_OPERACION: req['tipodeoperacion'],  
             USU_CCANAL: req.canal,  
@@ -170,7 +226,7 @@ async function prepareData(req){
             USU_CVALOR: req.valor,  
             USU_CMONEDA: req.moneda,  
             USU_CFRECUENCIA: req.frecuencia,  
-            USU_CESTADO: "PENDIENTE" 
+            USU_CESTADO: "NO_INICIADO" 
         }
 
         return dataToInsert;

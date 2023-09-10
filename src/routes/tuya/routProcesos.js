@@ -9,6 +9,7 @@ const fileUpload = require("express-fileupload");
 const axios = require('axios');
 const file_upload = fileUpload();
 const sentences = require('../../queries/main.query');
+const { rejects } = require("assert");
 
 router.post("/cargar", isLoggedIn, file_upload, async (req, res) => {
     if (!req.files || !req.files.archivos_excel) {
@@ -29,16 +30,17 @@ router.post("/cargar", isLoggedIn, file_upload, async (req, res) => {
                     const workbook = xlsx.readFile(filePath);
                     const sheetName = workbook.SheetNames[0];
                     const data = xlsx.utils.sheet_to_json(workbook.Sheets[sheetName]);
-
+                    // console.log(data)
+                    
                     const isValid = await sentences.validateData(data);
-                    console.log(isValid.isValid)
+
                     if (!isValid.isValid) {
                         return res.status(400).json({message: isValid.invalidObjects[0]});
-                        // return res.status(400).json({message: `error en las columnas: ${isValid.invalidObjects[0]}`});
                     }
-                    // return res.status(400).json({message: `error en las columnas: ${isValid.invalidObjects[0]}`});
-                    const nextStep = await insertInfo(isValid.data);
-                    if (nextStep) {
+
+                    const exitEmpleoyer = await getEmployes(isValid.data)
+
+                    if (exitEmpleoyer) {
                         return res.status(200).json({ message: 'El archivo se ha subido satisfactoriamente.' });
                     }else{
                         return res.status(500).json({ message: 'Error al cargar el archivo, verifica que sea el apropiado.' });
@@ -53,6 +55,38 @@ router.post("/cargar", isLoggedIn, file_upload, async (req, res) => {
     }
 });
 
+async function getEmployes(data){
+    try{
+
+        if(data.length == 0){
+            return false
+        }
+
+        for (let i = 0; i < data.length; i++) {
+
+            const query = "SELECT USU_CNUMERO_DOCUMENTO FROM tbl_rcontratacion WHERE USU_CNUMERO_DOCUMENTO = ?";
+            const ccEmployer = data[i].numerodedocumento              
+            const selectPromise = new Promise((resolve, reject) => {
+                pool.query(query, ccEmployer, async (error, results) => {
+                    if (error) {
+                        console.error("Error al ejecutar la consulta:", error);
+                        resolve(false);
+                    } else {
+                        if(!results.length){
+                            await insertInfo(data[i])
+                        }
+                        resolve(results);
+                    }
+                });
+            });
+        }
+        return true
+    } catch (error) {
+        console.error(`error en getEmployes debido a: ${error}`);
+        return false;
+    }
+}
+
 
 async function insertInfo(data) {
     try {
@@ -63,11 +97,9 @@ async function insertInfo(data) {
             return false
         }
 
-        for (let i = 0; i < data.length; i++) {
-            const dataInsert = await sentences.prepareData(data[i]);
+            const dataInsert = await sentences.prepareData(data);
             const query = "INSERT INTO tbl_rcontratacion SET ?";
             const insertPromise = new Promise((resolve, reject) => {
-                console.log('inseertPromise')
                 pool.query(query, dataInsert, (error, results) => {
                     if (error) {
                         console.error("Error al ejecutar la consulta:", error);
@@ -79,7 +111,6 @@ async function insertInfo(data) {
                 });
             });
             insertPromises.push(insertPromise);
-        }
         
         const insertResults = await Promise.all(insertPromises);
         return insertResults.includes(false) ? false : true;
@@ -88,6 +119,7 @@ async function insertInfo(data) {
         return false;
     }
 }
+
 
 router.post("/cargarexceltts", isLoggedIn, file_upload, async (req, res) => {
     try {

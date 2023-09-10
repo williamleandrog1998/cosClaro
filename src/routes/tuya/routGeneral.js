@@ -20,8 +20,8 @@ router.get('/gestionBot', isLoggedIn, async (req, res) => {
 /* Status */
 router.get('/status', isLoggedIn, async (req, res) => {
     try {
-        if (req.user.USU_CROL == "Administrador" || req.user.USU_CROL == "Gestor"){
-            const users = await pool.query('SELECT * FROM tbl_status');
+        if (req.user.USU_CROL == "Administrador" || req.user.USU_CROL == "Gestor") {
+            const users = await pool.query('SELECT * FROM tbl_rcontratacion');
             res.render('tuya/status', {users});
          }  else {
             res.redirect('/redirect');
@@ -30,6 +30,7 @@ router.get('/status', isLoggedIn, async (req, res) => {
         res.render('401');
     }
 });
+
 router.get('/status', isLoggedIn, async (req, res) => {
     try {
         if (req.user.USU_CROL == "Administrador" || req.user.USU_CROL == "Gestor") {
