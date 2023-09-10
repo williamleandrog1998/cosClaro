@@ -145,6 +145,7 @@ async def rpa_main():
             clickBoxes('//*[@id="__button58-BDI-content"]',driver) 
             selectElement('//*[@id="__box38-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CTIPO_TELEFONO'),driver)
             fillBoxes('//*[@id="__input29-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CNUMERO_TELEFONO'),driver)
+            selectElement('//*[@id="__input30-inner"]','sí',driver)
             #Direcciones
             selectElement('//*[@id="__box28-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CTIPO_DIRECCION'),driver)
             selectElement('//*[@id="__box29-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_PAIS_REGION'),driver)
@@ -157,6 +158,7 @@ async def rpa_main():
             fillBoxes('//*[@id="__input33-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CCONTACTO_EMERGENCIA'),driver) 
             selectElement('//*[@id="__box38-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CPARENTESCO_EMERGENCIA'),driver)
             fillBoxes('//*[@id="__input34-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CMOVIL_EMERGENCIA'),driver)
+            selectElement('//*[@id="__box39-inner"]','sí',driver)
             clickBoxes('//*[@id="__button54-BDI-content"]',driver)
             #Información familiar
             fillBoxes('//*[@id="__input44-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CNOMBRES_FAMILIAR'),driver)
