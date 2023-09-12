@@ -52,6 +52,25 @@ async def get_employes(query):
         print(f"Error en get_employes: {str(err)}")
 
 
+# async def delete_parentheses(req):
+#     try:
+#         new_data = []
+#         for dictionary in req:
+#             new_dict = {}
+#             for key, value in dictionary.items():
+#                 if isinstance(value, str):
+#                     # Usar expresiones regulares para eliminar los paréntesis y su contenido
+#                     new_value = re.sub(r'\([^)]*\)', '', value)
+#                     new_dict[key] = new_value
+#                 else:
+#                     new_dict[key] = value  # Mantener otros tipos de valores sin cambios
+#             new_data.append(new_dict)
+
+#         return new_data
+#     except Exception as err:
+#         print(f"Error en delete_parentheses_from_dict_list: {str(err)}")
+
+
 async def delete_parentheses(req):
     try:
         new_data = []
@@ -61,6 +80,8 @@ async def delete_parentheses(req):
                 if isinstance(value, str):
                     # Usar expresiones regulares para eliminar los paréntesis y su contenido
                     new_value = re.sub(r'\([^)]*\)', '', value)
+                    # Eliminar espacios en blanco al final de la cadena
+                    new_value = new_value.strip()
                     new_dict[key] = new_value
                 else:
                     new_dict[key] = value  # Mantener otros tipos de valores sin cambios
@@ -68,7 +89,8 @@ async def delete_parentheses(req):
 
         return new_data
     except Exception as err:
-        print(f"Error en delete_parentheses_from_dict_list: {str(err)}")
+        print(f"Error en delete_parentheses: {str(err)}")
+
 
 
 

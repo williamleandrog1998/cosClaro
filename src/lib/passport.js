@@ -17,9 +17,9 @@ passport.use('local.Login', new LocalStrategy ({
     console.log(req.body);
     const rows = await pool.query('SELECT * FROM tbl_rusuarios WHERE USU_CUSUARIO =?', [username]);
     console.log(rows)
-    if (rows.length > 0){  
-        console.log('***********')      
+    if (rows.length > 0){       
         const match = await helpers.encryptPassword('123456789')
+        
         console.log(match)
         const user = rows[0];
         const estado = user.USU_CESTADO;
