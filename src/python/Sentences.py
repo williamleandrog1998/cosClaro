@@ -51,26 +51,6 @@ async def get_employes(query):
     except Exception as err:
         print(f"Error en get_employes: {str(err)}")
 
-
-# async def delete_parentheses(req):
-#     try:
-#         new_data = []
-#         for dictionary in req:
-#             new_dict = {}
-#             for key, value in dictionary.items():
-#                 if isinstance(value, str):
-#                     # Usar expresiones regulares para eliminar los paréntesis y su contenido
-#                     new_value = re.sub(r'\([^)]*\)', '', value)
-#                     new_dict[key] = new_value
-#                 else:
-#                     new_dict[key] = value  # Mantener otros tipos de valores sin cambios
-#             new_data.append(new_dict)
-
-#         return new_data
-#     except Exception as err:
-#         print(f"Error en delete_parentheses_from_dict_list: {str(err)}")
-
-
 async def delete_parentheses(req):
     try:
         new_data = []
@@ -90,6 +70,22 @@ async def delete_parentheses(req):
         return new_data
     except Exception as err:
         print(f"Error en delete_parentheses: {str(err)}")
+
+
+async def sql_employers(query,data):
+    try:
+        conexion = conectar_db()
+        
+        if conexion:
+            cursor = None
+            cursor = conexion.cursor()  # Usamos dictionary=True para obtener resultados como diccionarios
+            cursor.execute(query,data)
+            conexion.commit()
+        
+    except Exception as err:
+        print(f"Error en insert_logs: {str(err)}")
+
+
 
 
 

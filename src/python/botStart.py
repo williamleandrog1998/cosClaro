@@ -1,5 +1,5 @@
 from inicioSesion import main
-from Sentences import get_employes, ejecutar_consulta, delete_parentheses
+from Sentences import get_employes, sql_employers
 import asyncio
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -19,9 +19,10 @@ def configure_webdriver():
     return webdriver.Chrome(service=service)
 
 def fillBoxes(xpath,req,driver):
-    wait = WebDriverWait(driver, 50)
+    wait = WebDriverWait(driver, 100)
     input_element = wait.until(EC.presence_of_element_located((By.XPATH, xpath)))
     input_element.send_keys(Keys.CONTROL+'a') #selecciona todo
+    time.sleep(1)
     input_element.send_keys(Keys.BACKSPACE)#borrar
     input_element.send_keys(req)
 
@@ -30,41 +31,28 @@ def clickBoxes(xpath,driver):
     search_box = wait.until(EC.visibility_of_element_located((By.XPATH, xpath)))
     search_box.click()#click
 
-def selectExecptions(xpath,i,driver):
+def select(xpath,req,driver,xpath_pop_up):#funcion para elementos desplegables
     try:
-        actions = WebDriverWait(driver, 50).until(
+        actions = WebDriverWait(driver, 100).until(
             EC.visibility_of_element_located((By.XPATH, xpath)))
-        actions.click()#click
-        for index in range(i):
-            actions.send_keys(Keys.ARROW_DOWN)
-        time.sleep(0.2)
-        actions.send_keys(Keys.RETURN)
-    except Exception as e:
-        print(f"Se ha encontrado un error en selectExecptions: {str(e)}")
-
-def typing(xpath,driver,text):
-    try:   
-        actions = WebDriverWait(driver, 50).until(
-            EC.visibility_of_element_located((By.XPATH, xpath)))
-        for letra in text:
-            actions.send_keys(letra)
-            time.sleep(0.1)
-        time.sleep(1)
-        actions.send_keys(Keys.ARROW_DOWN)
-        actions.send_keys(Keys.RETURN)
-
-    except Exception as e:
-        print(f"Se ha encontrado un error en xxx: {str(e)}")
-
-def selectElement(xpath,req,driver):#funcion para elementos desplegables
-    try:
-        actions = WebDriverWait(driver, 50).until(
-            EC.visibility_of_element_located((By.XPATH, xpath)))
-        # actions.send_keys(Keys.CONTROL+'a') #selecciona todo
-        # actions.send_keys(Keys.BACKSPACE)#borrar
-        time.sleep(2)
+        actions.send_keys(Keys.CONTROL+'a') #selecciona todo
+        actions.send_keys(Keys.BACKSPACE)#borrar
         actions.send_keys(req)
-        time.sleep(2)
+        actions = WebDriverWait(driver, 100).until(
+            EC.presence_of_all_elements_located((By.XPATH, xpath_pop_up)))
+        time.sleep(1.5)
+        actions[0].click()
+    except Exception as e:
+        print(f"Se ha encontrado un error en selectElement: {str(e)}")
+
+def selectElement(xpath,req,driver):
+    try:
+        actions = WebDriverWait(driver, 50).until(
+            EC.visibility_of_element_located((By.XPATH, xpath)))
+        actions.send_keys(Keys.CONTROL+'a') #selecciona todo
+        actions.send_keys(Keys.BACKSPACE)#borrar
+        actions.send_keys(req)
+        time.sleep(2.5)
         actions.send_keys(Keys.ARROW_DOWN)
         time.sleep(2)
         actions.send_keys(Keys.RETURN)
@@ -76,27 +64,12 @@ def estrato(xpath,num,driver):
     actions = WebDriverWait(driver, 50).until(
             EC.visibility_of_element_located((By.XPATH, xpath)))
     actions.send_keys(Keys.ARROW_DOWN)
-    time.sleep(1.5)
+    time.sleep(1)
     for i in num:
         actions.send_keys(Keys.ARROW_DOWN)
+        time.sleep(0.5)
     actions.send_keys(Keys.RETURN)
 
-def colombia(xpath,req,driver):
-    try:
-        actions = WebDriverWait(driver, 50).until(
-            EC.visibility_of_element_located((By.XPATH, xpath)))
-        actions.send_keys('hola') #selecciona todo
-        actions.send_keys(Keys.CONTROL+'a') #selecciona todo
-        actions.send_keys(Keys.BACKSPACE)#borrar
-        time.sleep(2)
-        actions.send_keys(req)
-        time.sleep(2)
-        actions.send_keys(Keys.ARROW_DOWN)
-        time.sleep(2)
-        actions.send_keys(Keys.RETURN)
-
-    except Exception as e:
-        print(f"Se ha encontrado un error en selectElement: {str(e)}")
 def urlClaro(url,driver):
     driver.get(url)
 
@@ -117,19 +90,24 @@ async def rpa_main():
         fillBoxes('//*[@id="__input2-inner"]',dataCredential['password'],driver)#input
 
         clickBoxes('//*[@id="__button2-inner"]',driver)
-        time.sleep(5)
+        time.sleep(4)
         #############################################################
         urlClaro('https://performancemanager8.successfactors.com/xi/ui/peopleprofile/pages/newhire.xhtml?&_s.crb=ZqyrEeSwE4E79Mlg%2fZnj24TSD9WzmnvEGkYupICuREQ%3d',driver)
      
         get_SQL_tbl_rcontratacion = await get_employes("SELECT * FROM tbl_rcontratacion WHERE USU_CESTADO = 'NO_INICIADO'")
 
         for i in range(len(get_SQL_tbl_rcontratacion)):
-            print(get_SQL_tbl_rcontratacion[i].get('USU_CMOTIVO_EVENTO'))
+
+            usu_id = ('EN_PROGRESO',get_SQL_tbl_rcontratacion[i].get('PKUSU_NCODIGO'))
+            update_query = "UPDATE tbl_rcontratacion SET USU_CESTADO = %s WHERE PKUSU_NCODIGO = %s"
+            await sql_employers(update_query, usu_id)
+
             #primer stage
             # fillBoxes('//*[@id="__picker1-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CFECHA_INGRESO'),driver)#dd-mm-aa
-            selectElement('//*[@id="__box0-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CEMPRESA'),driver)
-            selectElement('//*[@id="__box1-inner"]','Nueva Contratación',driver)
-            selectElement('//*[@id="__box2-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CPLANTILLA'),driver)
+            # fillBoxes('//*[@id="__picker1-inner"]','12092023',driver)#dd-mm-aa
+            select('//*[@id="__box0-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CEMPRESA'),driver,'//*[@id="__box0-popup-cont"]') 
+            select('//*[@id="__box1-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CMOTIVO_EVENTO'),driver,'//*[@id="__box1-popup-cont"]')
+            select('//*[@id="__box2-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CPLANTILLA'),driver,'//*[@id="__box2-popup-cont"]')
             time.sleep(1)
             clickBoxes('//*[@id="__button1-BDI-content"]',driver)
             #información del nombre
@@ -138,131 +116,182 @@ async def rpa_main():
             selectElement('//*[@id="__box6-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CTRATO'),driver)
             #Información biografica
             # fillBoxes('//*[@id="__picker3-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CFECHA_NACIMIENTO'),driver)
-            fillBoxes('//*[@id="__picker3-inner"]','14061998',driver)
-            # selectElement('//*[@id="__box7-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CPAIS_NACIMIENTO'),driver)
+            fillBoxes('//*[@id="__picker3-inner"]','14061996',driver)
+            select('//*[@id="__box7-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CPAIS_NACIMIENTO'),driver,'//*[@id="__box7-popup-cont"]')
+            select('//*[@id="__box8-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CDEPARTAMENTO_NACIMIENTO'),driver,'//*[@id="__box8-popup-cont"]')
             time.sleep(1)
-            colombia('//*[@id="__box7-inner"]','Colombia',driver)
-            # selectElement('//*[@id="__box7-inner"]','Colombia',driver)
-            # time.sleep(5)
-            selectElement('//*[@id="__box8-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CDEPARTAMENTO_NACIMIENTO'),driver)
-            time.sleep(1)
-            selectElement('//*[@id="__box9-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CCIUDAD_NACIMIENTO'),driver)
-            # #Información del empleado
+            select('//*[@id="__box9-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CCIUDAD_NACIMIENTO'),driver,'//*[@id="__box9-popup-cont"]')
+            # # #Información del empleado
             fillBoxes('//*[@id="__input8-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CNOMBRE_USUARIO'),driver)
             clickBoxes('//*[@id="__button26-BDI-content"]',driver)
-            # #Documento de identidad
-            selectElement('//*[@id="__box10-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CPAIS_EXPEDICION'),driver)
-            selectElement('//*[@id="__box11-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CTIPO_DOCUMENTO'),driver)
+            # # #Documento de identidad
+            select('//*[@id="__box10-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CPAIS_EXPEDICION'),driver,'//*[@id="__box10-popup-cont"]')
+            time.sleep(1)
+            select('//*[@id="__box11-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CTIPO_DOCUMENTO'),driver,'//*[@id="__box11-popup-cont"]')
             fillBoxes('//*[@id="__input11-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CNUMERO_DOCUMENTO'),driver)
-            selectElement('//*[@id="__box12-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CES_PRIMARIO'),driver)
-            # fillBoxes('//*[@id="__picker4-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CFECHA_EXPEDICION')
-            fillBoxes('//*[@id="__picker4-inner"]','16062014',driver)
-            # selectElement('//*[@id="__box13-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CDEPARTAMENTO_EXPEDICION'),driver)
-            # selectElement('//*[@id="__box14-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CCIUDAD_EXPEDICION'),driver)
-            # clickBoxes('//*[@id="__button25-BDI-content"]',driver)
+            select('//*[@id="__box12-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CES_PRIMARIO'),driver,'//*[@id="__box12-popup-cont"]')
+            # # fillBoxes('//*[@id="__picker4-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CFECHA_EXPEDICION')
+            fillBoxes('//*[@id="__picker4-inner"]','16062015',driver)
+            select('//*[@id="__box13-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CDEPARTAMENTO_EXPEDICION'),driver,'//*[@id="__box13-popup-cont"]')
+            time.sleep(1)
+            select('//*[@id="__box14-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CCIUDAD_EXPEDICION'),driver,'//*[@id="__box14-popup-cont"]')
+            clickBoxes('//*[@id="__button25-BDI-content"]',driver)
             # #Informació personal
-            # selectElement('//*[@id="__box15-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CGENERO'),driver)
-            # selectElement('//*[@id="__box16-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CESTADO_CIVIL'),driver)     
-            # selectElement('//*[@id="__box17-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CNACIONALIDAD'),driver)
-            # selectElement('//*[@id="__box18-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CLENGUA_NATIVA'),driver)
-            # clickBoxes('//*[@id="detailsBtn_0-BDI-content"]',driver)
-            # fillBoxes('//*[@id="__input14-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CCONFIGURACION_REGIONAL_PREDETERMINADA'),driver)
-            # selectElement('//*[@id="__box23-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CMODO_DESPLAZAMIENTO_CASA_TRABAJO_CASA'),driver)
+            select('//*[@id="__box15-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CGENERO'),driver,'//*[@id="__box15-popup-cont"]')
+            select('//*[@id="__box16-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CESTADO_CIVIL'),driver,'//*[@id="__box16-popup-cont"]')     
+            select('//*[@id="__box17-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CNACIONALIDAD'),driver,'//*[@id="__box17-popup-cont"]')
+            select('//*[@id="__box19-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CLENGUA_NATIVA'),driver,'//*[@id="__box19-popup-cont"]')
+            clickBoxes('//*[@id="detailsBtn_0-BDI-content"]',driver)
+            fillBoxes('//*[@id="__input14-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CCONFIGURACION_REGIONAL_PREDETERMINADA'),driver)
+            select('//*[@id="__box23-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CMODO_DESPLAZAMIENTO_CASA_TRABAJO_CASA'),driver,'//*[@id="__box23-popup-cont"]')
             # #información global
-            # selectElement('//*[@id="__box24-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CPAIS_REGION'),driver)
+            select('//*[@id="__box24-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CPAIS_REGION'),driver,'//*[@id="__box24-popup-cont"]')
             # #Información correo electrónico
-            # selectElement('//*[@id="__box42-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CTIPO_CORREO'),driver)
-            # fillBoxes('//*[@id="__input36-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CCORREO'),driver)
-            # # selectElement('//*[@id="__box43-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_ES_PRIMARIO'),driver)
-            # selectElement('//*[@id="__box43-inner"]','sí',driver)
-            # clickBoxes('//*[@id="__button58-BDI-content"]',driver) 
+            select('//*[@id="__box34-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CTIPO_CORREO'),driver,'//*[@id="__box34-popup-cont"]')
+            fillBoxes('//*[@id="__input26-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CCORREO'),driver)
+            select('//*[@id="__box35-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_ES_PRIMARIO'),driver,'//*[@id="__box35-popup-cont"]')
+            clickBoxes('//*[@id="__button54-BDI-content"]',driver) 
             # #Información del telefono
-            # selectElement('//*[@id="__box38-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CTIPO_TELEFONO'),driver)
-            # fillBoxes('//*[@id="__input29-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CNUMERO_TELEFONO'),driver)
-            # selectElement('//*[@id="__box37-inner"]','sí',driver)
+            select('//*[@id="__box36-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CTIPO_TELEFONO'),driver,'//*[@id="__box36-popup-cont"]')
+            fillBoxes('//*[@id="__input29-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CNUMERO_TELEFONO'),driver)
+            select('//*[@id="__box37-inner"]','sí',driver,'//*[@id="__box37-popup-cont"]')
             # #Direcciones
-            # selectElement('//*[@id="__box28-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CTIPO_DIRECCION'),driver)
-            # selectElement('//*[@id="__box29-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_PAIS_REGION'),driver)
-            # selectElement('//*[@id="__box30-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CDEPARTAMENTO'),driver)
-            # selectElement('//*[@id="__box31-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CCIUDAD'),driver)
-            # estrato('//*[@id="__box32-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CESTRATO'),driver)#########
-            # selectElement('//*[@id="__box33-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CTIPO_VIVIENDA'),driver)
-            # clickBoxes('//*[@id="__button53-content"]',driver)
+            select('//*[@id="__box28-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CTIPO_DIRECCION'),driver,'//*[@id="__box28-popup-cont"]')
+            select('//*[@id="__box29-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_PAIS_REGION'),driver,'//*[@id="__box29-popup-cont"]')
+            select('//*[@id="__box30-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CDEPARTAMENTO'),driver,'//*[@id="__box30-popup-cont"]')
+            time.sleep(1.5)
+            select('//*[@id="__box31-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CCIUDAD'),driver,'//*[@id="__box31-popup-cont"]')
+            # strat=get_SQL_tbl_rcontratacion[i].get('USU_CESTRATO')
+            # strat_num=int(strat)
+            estrato('//*[@id="__box32-inner"]','2',driver)
+            select('//*[@id="__box33-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CTIPO_VIVIENDA'),driver,'//*[@id="__box33-popup-cont"]')
+            clickBoxes('//*[@id="__button49-content"]',driver)
             # #Contacto de emergencia
-            # fillBoxes('//*[@id="__input33-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CCONTACTO_EMERGENCIA'),driver) 
-            # selectElement('//*[@id="__box38-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CPARENTESCO_EMERGENCIA'),driver)
-            # fillBoxes('//*[@id="__input34-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CMOVIL_EMERGENCIA'),driver)
-            # selectElement('//*[@id="__box39-inner"]','sí',driver)
-            # clickBoxes('//*[@id="__button54-BDI-content"]',driver)
+            fillBoxes('//*[@id="__input33-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CCONTACTO_EMERGENCIA'),driver) 
+            select('//*[@id="__box38-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CPARENTESCO_EMERGENCIA'),driver,'//*[@id="__box38-popup-cont"]')
+            fillBoxes('//*[@id="__input34-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CMOVIL_EMERGENCIA'),driver)
+            select('//*[@id="__box39-inner"]','sí',driver,'//*[@id="__box39-popup-cont"]')
+            clickBoxes('//*[@id="__button50-BDI-content"]',driver)
             # #Información familiar
-            # fillBoxes('//*[@id="__input44-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CNOMBRES_FAMILIAR'),driver)
-            # fillBoxes('//*[@id="__input45-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CAPELLIDOS_FAMILIAR'),driver)
-            # selectElement('//*[@id="__box50-inner"]]',get_SQL_tbl_rcontratacion[i].get('USU_CPARENTESCO_FAMILIAR'),driver)
-            # selectElement('//*[@id="__box51-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CVIVE_USTED_FAMILIAR'),driver)
-            # selectElement('//*[@id="__box52-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CDEPENDE_USTED_FAMILIAR'),driver)
-            # selectElement('//*[@id="__box53-inner"]','Ocupación',driver)
-            # selectElement('//*[@id="__box55-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CESTUDIA_FAMILIAR'),driver)
-            # selectElement('//*[@id="__box58-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CDISCAPACIDAD_FAMILIAR'),driver)#discapacidad
-            # if get_SQL_tbl_rcontratacion[i].get('USU_CDISCAPACIDAD_FAMILIAR') == 'sí':#estado de discapacidad
-            #     fillBoxes('//*[@id="__input47-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CLUGAR_EMISION'),driver)
-            #     fillBoxes('//*[@id="__input48-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CAUTORIDAD_EMISORA'),driver)     
-            #     fillBoxes('//*[@id="__picker10-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CFECHA_CADUCIDAD'),driver)  
-            # selectElement('//*[@id="__box59-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CGENERO_FAMILIAR'),driver)
+            fillBoxes('//*[@id="__input37-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CNOMBRES_FAMILIAR'),driver)
+            fillBoxes('//*[@id="__input38-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CAPELLIDOS_FAMILIAR'),driver)
+            select('//*[@id="__box40-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CPARENTESCO_FAMILIAR'),driver,'//*[@id="__box40-popup-cont"]')
+            select('//*[@id="__box41-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CVIVE_USTED_FAMILIAR'),driver,'//*[@id="__box41-popup-cont"]')
+            select('//*[@id="__box42-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CDEPENDE_USTED_FAMILIAR'),driver,'//*[@id="__box42-popup-cont"]')
+            select('//*[@id="__box43-inner"]','Ocupación',driver,'//*[@id="__box43-popup-cont"]')
+            select('//*[@id="__box45-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CESTUDIA_FAMILIAR'),driver,'//*[@id="__box45-popup-cont"]')
+            select('//*[@id="__box48-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CDISCAPACIDAD_FAMILIAR'),driver,'//*[@id="__box48-popup-cont"]')#discapacidad
+            time.sleep(3)
+            if get_SQL_tbl_rcontratacion[i].get('USU_CDISCAPACIDAD_FAMILIAR') == 'sí':#estado de discapacidad
+                fillBoxes('//*[@id="__input40-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CLUGAR_EMISION'),driver)
+                fillBoxes('//*[@id="__input41-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CAUTORIDAD_EMISORA'),driver)     
+                # fillBoxes('//*[@id="__picker8-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CFECHA_CADUCIDAD'),driver)  
+                fillBoxes('//*[@id="__picker8-inner"]','01072025',driver)
+            select('//*[@id="__box49-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CGENERO_FAMILIAR'),driver,'//*[@id="__box49-popup-cont"]')
             # fillBoxes('//*[@id="__picker11-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CFECHA_NACIMIENTO_FAMILIAR'),driver)
-            # clickBoxes('//*[@id="__button55-BDI-content"]',driver) 
-            # #Posición destino
-            # selectElement('//*[@id="__box64-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CGENERO_FAMILIAR'),driver)
-            # fillBoxes('//*[@id="__picker13-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CFECHA_INICIAL_POSICION'),driver)
-            # #Información organizativa
-            # selectElement('//*[@id="__box69-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CUBICACION'),driver)
-            # clickBoxes('//*[@id="__button98-BDI-content"]',driver)#CLICK AÑADIR MAS
+            fillBoxes('//*[@id="__picker9-inner"]','10101975',driver)
+            clickBoxes('//*[@id="__button51-BDI-content"]',driver) 
+            #Posición destino
+            select('//*[@id="__box50-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CPOSICION'),driver,'//*[@id="__box50-popup-cont"]')
+            time.sleep(2)
+            fillBoxes('//*[@id="__picker10-inner"]','14062021',driver)
+            time.sleep(2)
+            #Información organizativa
+            select('//*[@id="__box55-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CUBICACION'),driver,'//*[@id="__box55-popup-cont"]')
+            clickBoxes('//*[@id="detailsBtn_1-BDI-content"]',driver)#CLICK AÑADIR MAS
             # #Información del puesto
+            time.sleep(1)
+            fillBoxes('//*[@id="__picker11-inner"]','10122023',driver)
             # fillBoxes('//*[@id="__picker14-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CFECHA_FIN_PERIODO_PRUEBA'),driver)
-            # selectElement('//*[@id="__box82-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CAPLICA_RED_MAESTRA'),driver)
-            # selectElement('//*[@id="__box84-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CTIPO_OPERACION'),driver)
-            # selectElement('//*[@id="__box85-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CCANAL'),driver)
-            # selectElement('//*[@id="__box86-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CSUBCANAL'),driver)
-            # selectElement('//*[@id="__box92-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CGV_REGION'),driver)
-            # selectElement('//*[@id="__box100-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CCOMISION_SIN_COMISION'),driver)
-            # selectElement('//*[@id="__box101-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_DEPARTAMENTO'),driver)
-            # selectElement('//*[@id="__box102-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CIUDAD'),driver)
-            # selectElement('//*[@id="__box103-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CCLASIFICACION_BONO'),driver)
-            # selectElement('//*[@id="__box104-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CNIVEL_CARGO'),driver)
-            # selectElement('//*[@id="__box109-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CEPS'),driver)
-            # selectElement('//*[@id="__box110-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CAFP'),driver)
-            # selectElement('//*[@id="__box111-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CARL'),driver)
-            # selectElement('//*[@id="__box112-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CCAJA_COMPENSACION'),driver)
-            # selectElement('//*[@id="__box113-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CESANTIAS'),driver)
-            # selectElement('//*[@id="__box114-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CREGION'),driver)
+            select('//*[@id="__box68-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CAPLICA_RED_MAESTRA'),driver,'//*[@id="__box68-popup-cont"]')
+            time.sleep(2)
+            select('//*[@id="__box70-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CTIPO_OPERACION'),driver,'//*[@id="__box70-popup-cont"]')
+            select('//*[@id="__box71-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CCANAL'),driver,'//*[@id="__box71-popup-cont"]')
+            time.sleep(2)
+            select('//*[@id="__box72-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CSUBCANAL'),driver,'//*[@id="__box72-popup-cont"]')
+            select('//*[@id="__box78-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CGV_REGION'),driver,'//*[@id="__box78-popup-cont"]')
+            select('//*[@id="__box86-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CCOMISION_SIN_COMISION'),driver,'//*[@id="__box86-popup-cont"]')
+            select('//*[@id="__box87-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_DEPARTAMENTO'),driver,'//*[@id="__box87-popup-cont"]')
+            select('//*[@id="__box88-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CIUDAD'),driver,'//*[@id="__box88-popup-cont"]')
+            select('//*[@id="__box89-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CCLASIFICACION_BONO'),driver,'//*[@id="__box89-popup-cont"]')
+            select('//*[@id="__box90-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CNIVEL_CARGO'),driver,'//*[@id="__box90-popup-cont"]')
+            select('//*[@id="__box91-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CTIPO_POSICION'),driver,'//*[@id="__box91-popup-cont"]')
+            select('//*[@id="__box95-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CEPS'),driver,'//*[@id="__box95-popup-cont"]')
+            select('//*[@id="__box96-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CAFP'),driver,'//*[@id="__box96-popup-cont"]')
+            select('//*[@id="__box97-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CARL'),driver,'//*[@id="__box97-popup-cont"]')
+            select('//*[@id="__box98-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CCAJA_COMPENSACION'),driver,'//*[@id="__box98-popup-cont"]')
+            time.sleep(1)
+            select('//*[@id="__box99-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CCESANTIAS'),driver,'//*[@id="__box99-popup-cont"]')
+            select('//*[@id="__box103-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CTIPO_CONTRATO'),driver,'//*[@id="__box103-popup-cont"]')
+            time.sleep(2)
+            select('//*[@id="__box104-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CREGION'),driver,'//*[@id="__box104-popup-cont"]')
             # #Información de hora
-            # selectElement('//*[@id="__box121-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CPERFIL_TIEMPOS'),driver)
-            # clickBoxes('//*[@id="__button98-BDI-content"]',driver)
-            # #Perfil de accesps/familia
-            # selectElement('//*[@id="__box131-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CES_NUEVO_PERFIL'),driver)
-            # clickBoxes('//*[@id="__button112-BDI-content"]',driver)
-            # #Informacion de compensación
-            # selectElement('//*[@id="__box134-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CAREA_NOMINA'),driver)
-            # selectElement('//*[@id="__box135-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CES_ELEGIBLE_BENEFICIOS'),driver)
-            # selectElement('//*[@id="__box136-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CPERTENECE_SINDICATO'),driver)
-            # selectElement('//*[@id="__box137-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CFIJO_VARIABLE'),driver)
-            # clickBoxes('//*[@id="__button119-BDI-content"]',driver)
-            # #Conpensacion
-            # selectElement('//*[@id="__box150-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CCOMPENSACION'),driver)
-            # fillBoxes('//*[@id="__field0-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CFECHA_FIN_PERIODO_PRUEBA'),driver)
-            # selectElement('//*[@id="__box152-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CFRECUENCIA'),driver)
-            # #Objetivos de remuneracion
-            # clickBoxes('//*[@id="__button138-BDI-content"]',driver)
+            selectElement('//*[@id="__box107-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CPERFIL_TIEMPOS'),driver)
+            clickBoxes('//*[@id="__button82-BDI-content"]',driver)
+            #Relaciones del puesto
+            select('//*[@id="__box113-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CTIPO_RELACION'),driver,'//*[@id="__box113-popup-cont"]')
+            select('//*[@id="__input90-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CNOMBRE_RELACION'),driver,'//*[@id="__input90-popup-cont"]')
+            clickBoxes('//*[@id="__button81-BDI-content"]',driver)
+             # #Perfil de accesps/familia
+            select('//*[@id="__box116-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CES_NUEVO_PERFIL'),driver,'//*[@id="__box116-popup-cont"]')
+            clickBoxes('//*[@id="__button91-BDI-content"]',driver)
+             # #INFORMACION Conpensacion
+            select('//*[@id="__box119-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CAREA_NOMINA'),driver,'//*[@id="__box119-popup-cont"]')
+            select('//*[@id="__box120-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CES_ELEGIBLE_BENEFICIOS'),driver,'//*[@id="__box119-popup-cont"]')
+            select('//*[@id="__box121-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CPERTENECE_SINDICATO'),driver,'//*[@id="__box121-popup-cont"]')
+            time.sleep(2)
+            # 
+            select('//*[@id="__box122-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CFIJO_VARIABLE'),driver,'//*[@id="__box122-popup-cont"]')
+            clickBoxes('//*[@id="detailsBtn_2-BDI-content"]',driver)
+            select('//*[@id="__box128-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CPACTO_COLECTIVO'),driver,'//*[@id="__box128-popup-cont"]')
+            select('//*[@id="__box129-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CINTEGRALES_SIN_FIRMA_PACTO'),driver,'//*[@id="__box129-popup-cont"]')
+            select('//*[@id="__box130-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CESTA_FLEXIBILIZADO'),driver,'//*[@id="__box130-popup-cont"]')
+            time.sleep(1)
+            select('//*[@id="__box131-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CTIPO_PLAN_BENEFICIOS'),driver,'//*[@id="__box131-popup-cont"]')
+            time.sleep(1)
+            select('//*[@id="__box132-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CPLAN_BENEFICIOS'),driver,'//*[@id="__box132-popup-cont"]')
+            select('//*[@id="__box134-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CTIPO_SALARIO'),driver,'//*[@id="__box134-popup-cont"]')
+            clickBoxes('//*[@id="__button98-BDI-content"]',driver)
+            #Compensación
+            select('//*[@id="__box135-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CCONCEPTO_PAGO'),driver,'//*[@id="__box135-popup-cont"]')
+            time.sleep(2)
+            fillBoxes('//*[@id="__field0-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CVALOR'),driver)
+            select('//*[@id="__box136-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CMONEDA'),driver,'//*[@id="__box136-popup-cont"]')
+            select('//*[@id="__box137-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CFRECUENCIA'),driver,'//*[@id="__box137-popup-cont"]')
+            # clickBoxes('//*[@id="__button111-BDI-content"]',driver)
+            # #objetos de remuneración
+            # select('//*[@id="__box159-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CCONCEPTO_PAGO'),driver,'//*[@id="__box159-popup-cont"]')
+            # time.sleep(2)
+            # fillBoxes('//*[@id="__field2-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CVALOR'),driver)
+            # select('//*[@id="__box160-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CMONEDA'),driver,'//*[@id="__box160-popup-cont"]')
+            # select('//*[@id="__box161-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CFRECUENCIA'),driver,'//*[@id="__box161-popup-cont"]')
+            # 
+            time.sleep(5)
+            clickBoxes('//*[@id="__button97-BDI-content"]',driver)
+            # time.sleep(1000)
 
-            
+            #INSERT
+
+            # insert_query = "INSERT INTO tu_tabla (columna1, columna2) VALUES (%s, %s)"
+            # data = ()###
+            usu_id = ('COMPLETADO',get_SQL_tbl_rcontratacion[i].get('PKUSU_NCODIGO'))
+            update_query = "UPDATE tbl_rcontratacion SET USU_CESTADO = %s WHERE PKUSU_NCODIGO = %s"
+            # await sql_employers(insert_query, data)
+            await sql_employers(update_query, usu_id)
+
+
+            time.sleep(5)
+            urlClaro('https://performancemanager8.successfactors.com/xi/ui/peopleprofile/pages/newhire.xhtml?&_s.crb=ZqyrEeSwE4E79Mlg%2fZnj24TSD9WzmnvEGkYupICuREQ%3d',driver)
+            time.sleep(5)
 
     except Exception as e:
+        usu_id = ('ERROR',get_SQL_tbl_rcontratacion[i].get('PKUSU_NCODIGO'))
+        update_query = "UPDATE tbl_rcontratacion SET USU_CESTADO = %s WHERE PKUSU_NCODIGO = %s"
+        await sql_employers(update_query, usu_id)
         print(f"Se ha encontrado un error en rpa_main, debido a: {str(e)}")
-
+        
     finally:
         driver.quit()
-
-# async def rpa_main():
-#     driver = configure_webdriver()
 
 if __name__ == "__main__":
     asyncio.run(rpa_main())

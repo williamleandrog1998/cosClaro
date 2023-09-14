@@ -22,6 +22,7 @@ router.get('/status', isLoggedIn, async (req, res) => {
     try {
         if (req.user.USU_CROL == "Administrador" || req.user.USU_CROL == "Gestor") {
             const users = await pool.query('SELECT * FROM tbl_rcontratacion');
+            // const responsable = await pool.query('SELECT USU_CRESPONSABLE_GESTION FROM tbl_rusuarios');
             res.render('tuya/status', {users});
          }  else {
             res.redirect('/redirect');
@@ -31,18 +32,19 @@ router.get('/status', isLoggedIn, async (req, res) => {
     }
 });
 
-router.get('/status', isLoggedIn, async (req, res) => {
-    try {
-        if (req.user.USU_CROL == "Administrador" || req.user.USU_CROL == "Gestor") {
-            const users = await pool.query('SELECT * FROM tbl_status');
-            res.render('tuya/status', {users});
-         }  else {
-            res.redirect('/redirect');
-        } 
-    } catch (error) {
-        res.render('401');
-    }
-});
+// router.get('/status:id', isLoggedIn, async (req, res) => {
+//     try {
+//         if (req.user.USU_CROL == "Administrador" || req.user.USU_CROL == "Gestor") {
+//             const responsable_gestion = req.user.USU_CNOMBRES_APELLIDOS;
+//             await pool.query('UPDATE tbl_rusuarios set ? WHERE PKUSU_NCODIGO = ?', [responsable_gestion,[id]])
+//             res.render('tuya/status', {users});
+//          }  else {
+//             res.redirect('/redirect');
+//         } 
+//     } catch (error) {
+//         res.render('401');
+//     }
+// });
 
 // Usuarios Infobip
 router.post('/consultaUsuarios', isLoggedIn, async (req, res) => {

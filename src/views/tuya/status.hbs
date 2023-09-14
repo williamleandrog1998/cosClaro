@@ -29,7 +29,7 @@
                                         <th><center>ID</center></th>
                                         <th><center>NOMBRE</center></th>
                                         <th><center>IDENTIFICACIÓN</center></th>
-                                         <th><center>RESPONSABLE</center></th>
+                                         {{!-- <th><center>RESPONSABLE</center></th> --}}
                                         <th><center>ESTADO</center></th>  
                                         <th><center>FECHA REGISTRO</center></th>                                   
                                     </tr>
@@ -38,9 +38,9 @@
                                     {{#each users}}
                                     <tr>
                                         <td>{{PKUSU_NCODIGO}}</td>
-                                        <td>{{USU_CNOMBRE_USUARIO}}</td> 
+                                        <td>{{USU_CNOMBRES}}</td> 
                                         <td>{{USU_CNUMERO_DOCUMENTO}}</td>
-                                        <td>{{USU_CTIPO_DOCUMENTO}}</td>
+                                        {{!-- <td>{{USU_CTIPO_DOCUMENTO}}</td> --}}
                                         <td>{{USU_CESTADO}}</td>
                                         <td>{{USU_CFECHA_INGRESO}}</td>
                                     </tr>

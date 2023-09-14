@@ -1,3 +1,4 @@
+
 const insertInfo = require('../routes/tuya/routProcesos')
 
 async function validateData(req) {
@@ -20,12 +21,12 @@ async function validateData(req) {
             'areadepersonal', 'perfildetiempos', 'fechafinperiododeprueba',
             'aplicaredmaestra', 'tipodeoperacion', 'canal', 'subcanal', 'gv-region',
             'comision/sincomision', 'departamento_1', 'ciudad_1', 'clasificacionbono',
-            'niveldelcargo', 'eps', 'afp', 'arl', 'cajadecompensacion', 'cesantias',
+            'niveldelcargo', 'tipodeposicion', 'eps', 'afp', 'arl', 'cajadecompensacion', 'cesantias', 'tipodecontrato',
             'region', 'esnuevoperfil', 'areadenomina', 'eseligibleparabeneficios',
             'perteneceasindicato', 'fijo/variable', 'pactocolectivo',
             'integralessinfirmapacto', 'estaflexibilizado', 'tipoplanbeneficios',
             'plandebeneficios', 'tiposalario', 'compensacion', 'conceptodepago',
-            'valor', 'moneda', 'frecuencia'
+            'valor', 'moneda', 'tipoderelacion', 'nombrerelacion', 'frecuencia'
         ];
 
         function normalizeString(str) { //2
@@ -204,11 +205,13 @@ async function prepareData(req){
             USU_CIUDAD: req.ciudad, 
             USU_CCLASIFICACION_BONO: req['clasificacionbono'],  
             USU_CNIVEL_CARGO: req['niveldelcargo'],  
+            USU_CTIPO_POSICION: req['tipodeposicion'],
             USU_CEPS: req['eps'],  
             USU_CAFP: req['afp'],  
             USU_CARL: req['arl'],  
             USU_CCAJA_COMPENSACION: req['cajadecompensacion'],  
-            USU_CCESANTIAS: req['cesantias'],  
+            USU_CCESANTIAS: req['cesantias'], 
+            USU_CTIPO_CONTRATO: req['tipodecontrato'], 
             USU_CREGION: req['region'],  
             USU_CES_NUEVO_PERFIL: req['esnuevoperfil'],
             USU_CAREA_NOMINA: req['areadenomina'],  
@@ -224,7 +227,9 @@ async function prepareData(req){
             USU_CCOMPENSACION: req['compensacion'],  
             USU_CCONCEPTO_PAGO: req['conceptodepago'],  
             USU_CVALOR: req.valor,  
-            USU_CMONEDA: req.moneda,  
+            USU_CMONEDA: req.moneda, 
+            USU_CTIPO_RELACION: req['tipoderelacion'],
+            USU_CNOMBRE_RELACION: req['nombrerelacion'], 
             USU_CFRECUENCIA: req.frecuencia,  
             USU_CESTADO: "NO_INICIADO" 
         }
