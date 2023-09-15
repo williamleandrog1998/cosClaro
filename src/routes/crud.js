@@ -21,12 +21,13 @@ router.get('/adminusuarios', isLoggedIn, async (req, res) => {
 
 /* Registro Usuario */
 router.post('/adminusuarios', isLoggedIn, async (req, res) => {
-    const { documento, nombres_apellidos, usuario, rol, estado_usuario, cargo, responsable_gestion} = req.body;
+    const { documento, nombres_apellidos, usuario,password, rol, estado_usuario, cargo, responsable_gestion} = req.body;
     // console.log(req.body);
     const newUser = {        
         USU_CDOCUMENTO: documento,
         USU_CNOMBRES_APELLIDOS: nombres_apellidos,
         USU_CUSUARIO: usuario,
+        USU_CPASSWORD: password,
         USU_CROL: rol,
         USU_CESTADO: estado_usuario,
         USU_CCARGO: cargo,
@@ -42,14 +43,15 @@ router.post('/adminusuarios', isLoggedIn, async (req, res) => {
 /* Modificar Usuario */
 router.post('/adminusuarios/:id', isLoggedIn, async (req, res) => {
     const { id } = req.params;
-    const { documento, nombres_apellidos, usuario, rol, estado_usuario} = req.body;
-    // console.log(req.body);
+    const { documento, nombres_apellidos, usuario,password, rol, estado_usuario} = req.body;
+    console.log(req.body);
     const cargo = req.user.USU_CROL;
     const responsable_gestion = req.user.USU_CNOMBRES_APELLIDOS;
     const newUser = {        
         USU_CDOCUMENTO: documento,
         USU_CNOMBRES_APELLIDOS: nombres_apellidos,
         USU_CUSUARIO: usuario,
+        USU_CPASSWORD: password,
         USU_CROL: rol,
         USU_CESTADO: estado_usuario,
         USU_CCARGO: cargo,
@@ -79,7 +81,6 @@ router.post('/bot/:id', isLoggedIn, async (req, res) => {
     const { usuario, contraseña} = req.body;
     console.log(req.body)
     const newBot = {        
-        // SS_URL: URLx,
         SS_USER: usuario,
         SS_PASSWORD: contraseña
     };

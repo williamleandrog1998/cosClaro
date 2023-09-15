@@ -12,7 +12,7 @@ from selenium.webdriver.support.ui import Select
 import time
 import os
 
-a = 0;
+# a = 0;
 
 def configure_webdriver():
     dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -268,7 +268,7 @@ async def rpa_main():
         usu_id = ('ERROR',get_SQL_tbl_rcontratacion[i].get('PKUSU_NCODIGO'))
         await sql_employers(update_query, usu_id)
         print(f"Se ha encontrado un error en rpa_main, debido a: {str(e)}")
-        a = 1;
+        # a = 1;
         
     finally:
         driver.quit()
@@ -276,9 +276,9 @@ async def rpa_main():
 if __name__ == "__main__":
     asyncio.run(rpa_main())
 
-if a == 1:
-    a = 0;
-    asyncio.run(rpa_main())
+# if a == 1:
+#     a = 0;
+#     asyncio.run(rpa_main())
 
 
 

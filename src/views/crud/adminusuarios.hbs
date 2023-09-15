@@ -67,6 +67,11 @@
                                                 </div>
 
                                                 <div class="form-group col-sm-6 col-md-6 col-lg-6 col-xl-6">
+                                                    <label for="password" class="col-form-label">Contraseña</label>
+                                                    <input type="password" name="password" id="txtpassword_usuario" class="form-control" data-toggle="tooltip" data-placement="bottom" placeholder="******" onkeyup="mayus(this);" autocomplete="off" required>
+                                                </div>
+
+                                                <div class="form-group col-sm-6 col-md-6 col-lg-6 col-xl-6">
                                                     <label for="txtrol_usuario" class="col-form-label">Rol</label>
                                                     <input type="text" name="rol" id="txtrol_usuario" list="crud_rol_internos" class="form-control" data-toggle="tooltip" data-placement="bottom" placeholder="Agente" autocomplete="off" required>
                                                 </div>
@@ -102,6 +107,7 @@
                                         <th><center>DOCUMENTO</center></th>
                                         <th><center>NOMBRES Y APELLIDOS</center></th>
                                         <th><center>USUARIO RED</center></th>
+                                        <th><center>CONTRASEÑA</center></th>
                                         <th><center>ROL</center></th>
                                         <th><center>ESTADO</center></th>
                                         <th><center>ÚLTIMA ACTUALIZACIÓN</center></th>
@@ -141,9 +147,15 @@
                                                                     </div>
 
                                                                     <div class="form-group col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                                                                        <label for="txtusuario_red" class="col-form-label">Usuario de Red</label>
+                                                                        <label for="txtusuario_red" class="col-form-label">Usuario</label>
                                                                         <input type="text" name="usuario" id="txtusuario_red" class="form-control" data-toggle="tooltip" data-placement="bottom" placeholder="ECF0343A" onkeyup="mayus(this);" value="{{USU_CUSUARIO}}" autocomplete="off" required>
-                                                                    </div>                                                                    
+                                                                    </div>
+
+                                                                    <div class="form-group col-sm-6 col-md-6 col-lg-6 col-xl-6">
+                                                                        <label for="password" class="col-form-label">Contraseña</label>
+                                                                        <input type="text" name="password" id="txtpassword_usuario" class="form-control" data-toggle="tooltip" data-placement="bottom" placeholder="******" onkeyup="mayus(this);" value="{{USU_CPASSWORD}}" autocomplete="off" required>
+                                                                    </div>
+                                                                                            
 
                                                                     <div class="form-group col-sm-6 col-md-6 col-lg-6 col-xl-6">
                                                                         <label for="txtrol_usuario" class="col-form-label">Rol</label>
@@ -174,6 +186,7 @@
                                         <td>{{USU_CDOCUMENTO}}</td>
                                         <td>{{USU_CNOMBRES_APELLIDOS}}</td>
                                         <td>{{USU_CUSUARIO}}</td>
+                                        <td>{{USU_CPASSWORD}}</td>
                                         <td>{{USU_CROL}}</td>
                                         <td>{{USU_CESTADO}}</td>
                                         <td>{{USU_CFECHA_MODIFICACION}}</td>

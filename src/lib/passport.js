@@ -6,6 +6,7 @@ const pool = require('../database');
 const helpers = require('./helpers');
 const keys = require('../keys');
 var os = require('os');
+const { Console } = require('console');
 
 
 //Test Local Login
@@ -14,18 +15,13 @@ passport.use('local.Login', new LocalStrategy ({
     passwordField: 'password',
     passReqToCallback: true
 }, async (req, username, password, done) =>{
-    console.log(req.body);
     const rows = await pool.query('SELECT * FROM tbl_rusuarios WHERE USU_CUSUARIO =?', [username]);
-    console.log(rows)
     if (rows.length > 0){       
-        const match = await helpers.encryptPassword('123456789')
-        
-        console.log(match)
+        // const match = await helpers.encryptPassword('123456789')
+        const match = await helpers.encryptPassword(rows[0].USU_CPASSWORD)
         const user = rows[0];
-        const estado = user.USU_CESTADO;
-        console.log(estado)      
+        const estado = user.USU_CESTADO;  
         const validPassword = await helpers.matchPassword(password, match)
-        console.log(validPassword)
         if (validPassword == true && estado == 'Activo' ) {
             done(null, user, req.flash('success', 'Bienvenido ' + user.USU_CUSUARIO));            
         } else if (validPassword == true && user.USU_CESTADO == "Inactivo") {
