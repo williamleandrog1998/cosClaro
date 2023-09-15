@@ -4144,7 +4144,9 @@ body.authentication-bg {
 
 body.authentication-bg-pattern {
   /* background-image: url("../img/fondo/fondo_login.png"); */
-  background-image: linear-gradient(to right, #ec1c29, #ffe202);
+  /* background-image: linear-gradient(to right, #F3E5AB,#ff3028,#ff0000, #ff3028,#F3E5AB); */
+  /* background-image: linear-gradient(to right, #ec1c29, #ffe202); */
+  background-image: linear-gradient(to right, #ff0000,#F3E5AB, #F3E5AB,#F3E5AB,#ff0000)
 }
 
 body.authentication-bg-pattern-Registro {
@@ -4859,7 +4861,10 @@ button:focus {
 
 .card2 {
   width: 50%;
-  background-image: linear-gradient(to right, #ffe202, #ec1c29);
+  /* background-image: linear-gradient(to right, #ffe202, #ec1c29); */
+  /* background-image: linear-gradient(to right, #F3E5AB,#ff3028,#ff0000); */
+  background-color: #ff0000;
+  /* background-image: linear-gradient(to right, #ff0000,#F3E5AB, #F3E5AB,#F3E5AB,#ff0000) */
 }
 
 #logo {
@@ -4885,7 +4890,7 @@ button:focus {
 .btn-color {
   border-radius: 50px;
   color: #fff;
-  background-image: linear-gradient(to right, #ffe202, #ec1c29);
+  background-image: linear-gradient(to right, #F3E5AB,#ff3028,#ff0000, #ff3028,#F3E5AB);
   padding: 15px;
   cursor: pointer;
   border: none !important;
@@ -4893,8 +4898,9 @@ button:focus {
 }
 
 .btn-color:hover {
-  color: #fff;
-  background-image: linear-gradient(to right, #ec1c29, #ffe202);
+  color: #ff3300;
+  background-image: linear-gradient(to right, #ff0000,#F3E5AB, #F3E5AB,#F3E5AB,#ff0000);
+  font-weight: bold;
 }
 
 .btn-white {

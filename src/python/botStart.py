@@ -12,6 +12,8 @@ from selenium.webdriver.support.ui import Select
 import time
 import os
 
+a = 0;
+
 def configure_webdriver():
     dir_path = os.path.dirname(os.path.realpath(__file__))
     chrome_driver_path = os.path.join(dir_path, 'chromedriver.exe')
@@ -43,7 +45,7 @@ def select(xpath,req,driver,xpath_pop_up):#funcion para elementos desplegables
         time.sleep(1.5)
         actions[0].click()
     except Exception as e:
-        print(f"Se ha encontrado un error en selectElement: {str(e)}")
+        print(f"Se ha encontrado un error en select: {str(e)}")
 
 def selectElement(xpath,req,driver):
     try:
@@ -60,12 +62,13 @@ def selectElement(xpath,req,driver):
     except Exception as e:
         print(f"Se ha encontrado un error en selectElement: {str(e)}")
 
-def estrato(xpath,num,driver):
+def estrato(xpath, num, driver):
     actions = WebDriverWait(driver, 50).until(
-            EC.visibility_of_element_located((By.XPATH, xpath)))
+        EC.visibility_of_element_located((By.XPATH, xpath)))
     actions.send_keys(Keys.ARROW_DOWN)
+    stract = int(num)
     time.sleep(1)
-    for i in num:
+    for _ in range(stract):  # Usamos range para repetir la acción stract veces
         actions.send_keys(Keys.ARROW_DOWN)
         time.sleep(0.5)
     actions.send_keys(Keys.RETURN)
@@ -90,8 +93,7 @@ async def rpa_main():
         fillBoxes('//*[@id="__input2-inner"]',dataCredential['password'],driver)#input
 
         clickBoxes('//*[@id="__button2-inner"]',driver)
-        time.sleep(4)
-        #############################################################
+        time.sleep(5)
         urlClaro('https://performancemanager8.successfactors.com/xi/ui/peopleprofile/pages/newhire.xhtml?&_s.crb=ZqyrEeSwE4E79Mlg%2fZnj24TSD9WzmnvEGkYupICuREQ%3d',driver)
      
         get_SQL_tbl_rcontratacion = await get_employes("SELECT * FROM tbl_rcontratacion WHERE USU_CESTADO = 'NO_INICIADO'")
@@ -160,9 +162,8 @@ async def rpa_main():
             select('//*[@id="__box30-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CDEPARTAMENTO'),driver,'//*[@id="__box30-popup-cont"]')
             time.sleep(1.5)
             select('//*[@id="__box31-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CCIUDAD'),driver,'//*[@id="__box31-popup-cont"]')
-            # strat=get_SQL_tbl_rcontratacion[i].get('USU_CESTRATO')
             # strat_num=int(strat)
-            estrato('//*[@id="__box32-inner"]','2',driver)
+            estrato('//*[@id="__box32-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CESTRATO'),driver)
             select('//*[@id="__box33-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CTIPO_VIVIENDA'),driver,'//*[@id="__box33-popup-cont"]')
             clickBoxes('//*[@id="__button49-content"]',driver)
             # #Contacto de emergencia
@@ -187,13 +188,11 @@ async def rpa_main():
                 fecha_caducidad = await excel_date_to_python_date(get_SQL_tbl_rcontratacion[i].get('USU_CFECHA_CADUCIDAD'))
                 fillBoxes('//*[@id="__picker8-inner"]',fecha_caducidad,driver)
             select('//*[@id="__box49-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CGENERO_FAMILIAR'),driver,'//*[@id="__box49-popup-cont"]')
-            # fillBoxes('//*[@id="__picker11-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CFECHA_NACIMIENTO_FAMILIAR'),driver)
             fecha_nacimiento = await excel_date_to_python_date(get_SQL_tbl_rcontratacion[i].get('USU_CFECHA_NACIMIENTO_FAMILIAR'))
             fillBoxes('//*[@id="__picker9-inner"]',fecha_nacimiento,driver)
             clickBoxes('//*[@id="__button51-BDI-content"]',driver) 
             #Posición destino
             select('//*[@id="__box50-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CPOSICION'),driver,'//*[@id="__box50-popup-cont"]')
-            # fillBoxes('//*[@id="__picker10-inner"]','14062021',driver)
             time.sleep(3)
             #Información organizativa
             select('//*[@id="__box55-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CUBICACION'),driver,'//*[@id="__box55-popup-cont"]')
@@ -201,8 +200,7 @@ async def rpa_main():
             # #Información del puesto
             time.sleep(2)
             fecha_periodo_prueba = await excel_date_to_python_date(get_SQL_tbl_rcontratacion[i].get('USU_CFECHA_FIN_PERIODO_PRUEBA'))
-            fillBoxes('//*[@id="__picker11-inner"]',fecha_periodo_prueba,driver)
-            # fillBoxes('//*[@id="__picker14-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CFECHA_FIN_PERIODO_PRUEBA'),driver) 
+            fillBoxes('//*[@id="__picker11-inner"]',fecha_periodo_prueba,driver) 
             select('//*[@id="__box68-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CAPLICA_RED_MAESTRA'),driver,'//*[@id="__box68-popup-cont"]')
             time.sleep(3)
             select('//*[@id="__box70-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CTIPO_OPERACION'),driver,'//*[@id="__box70-popup-cont"]')
@@ -258,39 +256,28 @@ async def rpa_main():
             fillBoxes('//*[@id="__field0-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CVALOR'),driver)
             select('//*[@id="__box136-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CMONEDA'),driver,'//*[@id="__box136-popup-cont"]')
             select('//*[@id="__box137-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CFRECUENCIA'),driver,'//*[@id="__box137-popup-cont"]')
-            # clickBoxes('//*[@id="__button111-BDI-content"]',driver)
-            # #objetos de remuneración
-            # select('//*[@id="__box159-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CCONCEPTO_PAGO'),driver,'//*[@id="__box159-popup-cont"]')
-            # time.sleep(2)
-            # fillBoxes('//*[@id="__field2-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CVALOR'),driver)
-            # select('//*[@id="__box160-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CMONEDA'),driver,'//*[@id="__box160-popup-cont"]')
-            # select('//*[@id="__box161-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CFRECUENCIA'),driver,'//*[@id="__box161-popup-cont"]')
             time.sleep(5)
             clickBoxes('//*[@id="__button97-BDI-content"]',driver)
-
-            #INSERT
-
-            # insert_query = "INSERT INTO tu_tabla (columna1, columna2) VALUES (%s, %s)"
-            # data = ()###
-            
-            # update_query = "UPDATE tbl_rcontratacion SET USU_CESTADO = %s WHERE PKUSU_NCODIGO = %s"
-            # await sql_employers(insert_query, data)
+            time.sleep(10)
+            urlClaro('https://performancemanager8.successfactors.com/xi/ui/peopleprofile/pages/newhire.xhtml?&_s.crb=ZqyrEeSwE4E79Mlg%2fZnj24TSD9WzmnvEGkYupICuREQ%3d',driver)
             usu_id = ('COMPLETADO',get_SQL_tbl_rcontratacion[i].get('PKUSU_NCODIGO'))
             await sql_employers(update_query, usu_id)
-
-            time.sleep(5)
-            urlClaro('https://performancemanager8.successfactors.com/xi/ui/peopleprofile/pages/newhire.xhtml?&_s.crb=ZqyrEeSwE4E79Mlg%2fZnj24TSD9WzmnvEGkYupICuREQ%3d',driver)
             time.sleep(5)
 
     except Exception as e:
         usu_id = ('ERROR',get_SQL_tbl_rcontratacion[i].get('PKUSU_NCODIGO'))
         await sql_employers(update_query, usu_id)
         print(f"Se ha encontrado un error en rpa_main, debido a: {str(e)}")
+        a = 1;
         
     finally:
         driver.quit()
 
 if __name__ == "__main__":
+    asyncio.run(rpa_main())
+
+if a == 1:
+    a = 0;
     asyncio.run(rpa_main())
 
 
