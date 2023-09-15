@@ -1,4 +1,6 @@
+
 from Connection import conectar_db, cerrar_db
+from datetime import datetime, timedelta
 import mysql.connector
 import re
 import asyncio
@@ -70,6 +72,20 @@ async def delete_parentheses(req):
         return new_data
     except Exception as err:
         print(f"Error en delete_parentheses: {str(err)}")
+
+async def excel_date_to_python_date(excel_date_str):
+    try:
+        # Convertir el string a un número entero
+        excel_date = int(excel_date_str)
+        # La fecha base de Excel es el 1 de enero de 1900
+        excel_base_date = datetime(1900, 1, 1)
+        # Convertir el número de Excel a una fecha en Python
+        python_date = excel_base_date + timedelta(days=excel_date - 2)
+        # Convertir la fecha a formato "ddmmyy"
+        formatted_date = python_date.strftime('%d%m%y')
+        return formatted_date
+    except Exception as err:
+        print(f"Error en excel_date_to_python_date: {str(err)}")
 
 
 async def sql_employers(query,data):

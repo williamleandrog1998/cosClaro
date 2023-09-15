@@ -1,5 +1,5 @@
 from inicioSesion import main
-from Sentences import get_employes, sql_employers
+from Sentences import get_employes, sql_employers, excel_date_to_python_date
 import asyncio
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -27,7 +27,7 @@ def fillBoxes(xpath,req,driver):
     input_element.send_keys(req)
 
 def clickBoxes(xpath,driver):
-    wait = WebDriverWait(driver, 50)
+    wait = WebDriverWait(driver, 5)
     search_box = wait.until(EC.visibility_of_element_located((By.XPATH, xpath)))
     search_box.click()#click
 
@@ -103,8 +103,6 @@ async def rpa_main():
             await sql_employers(update_query, usu_id)
 
             #primer stage
-            # fillBoxes('//*[@id="__picker1-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CFECHA_INGRESO'),driver)#dd-mm-aa
-            # fillBoxes('//*[@id="__picker1-inner"]','12092023',driver)#dd-mm-aa
             select('//*[@id="__box0-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CEMPRESA'),driver,'//*[@id="__box0-popup-cont"]') 
             select('//*[@id="__box1-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CMOTIVO_EVENTO'),driver,'//*[@id="__box1-popup-cont"]')
             select('//*[@id="__box2-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CPLANTILLA'),driver,'//*[@id="__box2-popup-cont"]')
@@ -115,8 +113,8 @@ async def rpa_main():
             fillBoxes('//*[@id="__input1-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CAPELLIDOS'),driver)
             selectElement('//*[@id="__box6-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CTRATO'),driver)
             #Información biografica
-            # fillBoxes('//*[@id="__picker3-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CFECHA_NACIMIENTO'),driver)
-            fillBoxes('//*[@id="__picker3-inner"]','14061996',driver)
+            fecha_contratacion = await excel_date_to_python_date(get_SQL_tbl_rcontratacion[i].get('USU_CFECHA_NACIMIENTO'))
+            fillBoxes('//*[@id="__picker3-inner"]',fecha_contratacion,driver)
             select('//*[@id="__box7-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CPAIS_NACIMIENTO'),driver,'//*[@id="__box7-popup-cont"]')
             select('//*[@id="__box8-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CDEPARTAMENTO_NACIMIENTO'),driver,'//*[@id="__box8-popup-cont"]')
             time.sleep(1)
@@ -130,12 +128,13 @@ async def rpa_main():
             select('//*[@id="__box11-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CTIPO_DOCUMENTO'),driver,'//*[@id="__box11-popup-cont"]')
             fillBoxes('//*[@id="__input11-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CNUMERO_DOCUMENTO'),driver)
             select('//*[@id="__box12-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CES_PRIMARIO'),driver,'//*[@id="__box12-popup-cont"]')
-            # # fillBoxes('//*[@id="__picker4-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CFECHA_EXPEDICION')
-            fillBoxes('//*[@id="__picker4-inner"]','16062015',driver)
+            fecha_expedicion = await excel_date_to_python_date(get_SQL_tbl_rcontratacion[i].get('USU_CFECHA_EXPEDICION'))
+            fillBoxes('//*[@id="__picker4-inner"]',fecha_expedicion,driver)
             select('//*[@id="__box13-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CDEPARTAMENTO_EXPEDICION'),driver,'//*[@id="__box13-popup-cont"]')
             time.sleep(1)
             select('//*[@id="__box14-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CCIUDAD_EXPEDICION'),driver,'//*[@id="__box14-popup-cont"]')
             clickBoxes('//*[@id="__button25-BDI-content"]',driver)
+            # clickBoxes('//*[@id="__button31-BDI-content"]',driver)#################
             # #Informació personal
             select('//*[@id="__box15-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CGENERO'),driver,'//*[@id="__box15-popup-cont"]')
             select('//*[@id="__box16-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CESTADO_CIVIL'),driver,'//*[@id="__box16-popup-cont"]')     
@@ -185,29 +184,30 @@ async def rpa_main():
             if get_SQL_tbl_rcontratacion[i].get('USU_CDISCAPACIDAD_FAMILIAR') == 'sí':#estado de discapacidad
                 fillBoxes('//*[@id="__input40-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CLUGAR_EMISION'),driver)
                 fillBoxes('//*[@id="__input41-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CAUTORIDAD_EMISORA'),driver)     
-                # fillBoxes('//*[@id="__picker8-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CFECHA_CADUCIDAD'),driver)  
-                fillBoxes('//*[@id="__picker8-inner"]','01072025',driver)
+                fecha_caducidad = await excel_date_to_python_date(get_SQL_tbl_rcontratacion[i].get('USU_CFECHA_CADUCIDAD'))
+                fillBoxes('//*[@id="__picker8-inner"]',fecha_caducidad,driver)
             select('//*[@id="__box49-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CGENERO_FAMILIAR'),driver,'//*[@id="__box49-popup-cont"]')
             # fillBoxes('//*[@id="__picker11-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CFECHA_NACIMIENTO_FAMILIAR'),driver)
-            fillBoxes('//*[@id="__picker9-inner"]','10101975',driver)
+            fecha_nacimiento = await excel_date_to_python_date(get_SQL_tbl_rcontratacion[i].get('USU_CFECHA_NACIMIENTO_FAMILIAR'))
+            fillBoxes('//*[@id="__picker9-inner"]',fecha_nacimiento,driver)
             clickBoxes('//*[@id="__button51-BDI-content"]',driver) 
             #Posición destino
             select('//*[@id="__box50-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CPOSICION'),driver,'//*[@id="__box50-popup-cont"]')
-            time.sleep(2)
-            fillBoxes('//*[@id="__picker10-inner"]','14062021',driver)
-            time.sleep(2)
+            # fillBoxes('//*[@id="__picker10-inner"]','14062021',driver)
+            time.sleep(3)
             #Información organizativa
             select('//*[@id="__box55-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CUBICACION'),driver,'//*[@id="__box55-popup-cont"]')
             clickBoxes('//*[@id="detailsBtn_1-BDI-content"]',driver)#CLICK AÑADIR MAS
             # #Información del puesto
-            time.sleep(1)
-            fillBoxes('//*[@id="__picker11-inner"]','10122023',driver)
-            # fillBoxes('//*[@id="__picker14-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CFECHA_FIN_PERIODO_PRUEBA'),driver)
-            select('//*[@id="__box68-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CAPLICA_RED_MAESTRA'),driver,'//*[@id="__box68-popup-cont"]')
             time.sleep(2)
+            fecha_periodo_prueba = await excel_date_to_python_date(get_SQL_tbl_rcontratacion[i].get('USU_CFECHA_FIN_PERIODO_PRUEBA'))
+            fillBoxes('//*[@id="__picker11-inner"]',fecha_periodo_prueba,driver)
+            # fillBoxes('//*[@id="__picker14-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CFECHA_FIN_PERIODO_PRUEBA'),driver) 
+            select('//*[@id="__box68-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CAPLICA_RED_MAESTRA'),driver,'//*[@id="__box68-popup-cont"]')
+            time.sleep(3)
             select('//*[@id="__box70-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CTIPO_OPERACION'),driver,'//*[@id="__box70-popup-cont"]')
             select('//*[@id="__box71-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CCANAL'),driver,'//*[@id="__box71-popup-cont"]')
-            time.sleep(2)
+            time.sleep(3)
             select('//*[@id="__box72-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CSUBCANAL'),driver,'//*[@id="__box72-popup-cont"]')
             select('//*[@id="__box78-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CGV_REGION'),driver,'//*[@id="__box78-popup-cont"]')
             select('//*[@id="__box86-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CCOMISION_SIN_COMISION'),driver,'//*[@id="__box86-popup-cont"]')
@@ -220,10 +220,10 @@ async def rpa_main():
             select('//*[@id="__box96-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CAFP'),driver,'//*[@id="__box96-popup-cont"]')
             select('//*[@id="__box97-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CARL'),driver,'//*[@id="__box97-popup-cont"]')
             select('//*[@id="__box98-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CCAJA_COMPENSACION'),driver,'//*[@id="__box98-popup-cont"]')
-            time.sleep(1)
+            time.sleep(2)
             select('//*[@id="__box99-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CCESANTIAS'),driver,'//*[@id="__box99-popup-cont"]')
             select('//*[@id="__box103-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CTIPO_CONTRATO'),driver,'//*[@id="__box103-popup-cont"]')
-            time.sleep(2)
+            time.sleep(3)
             select('//*[@id="__box104-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CREGION'),driver,'//*[@id="__box104-popup-cont"]')
             # #Información de hora
             selectElement('//*[@id="__box107-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CPERFIL_TIEMPOS'),driver)
@@ -246,15 +246,15 @@ async def rpa_main():
             select('//*[@id="__box128-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CPACTO_COLECTIVO'),driver,'//*[@id="__box128-popup-cont"]')
             select('//*[@id="__box129-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CINTEGRALES_SIN_FIRMA_PACTO'),driver,'//*[@id="__box129-popup-cont"]')
             select('//*[@id="__box130-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CESTA_FLEXIBILIZADO'),driver,'//*[@id="__box130-popup-cont"]')
-            time.sleep(1)
+            time.sleep(2)
             select('//*[@id="__box131-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CTIPO_PLAN_BENEFICIOS'),driver,'//*[@id="__box131-popup-cont"]')
-            time.sleep(1)
+            time.sleep(2)
             select('//*[@id="__box132-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CPLAN_BENEFICIOS'),driver,'//*[@id="__box132-popup-cont"]')
             select('//*[@id="__box134-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CTIPO_SALARIO'),driver,'//*[@id="__box134-popup-cont"]')
             clickBoxes('//*[@id="__button98-BDI-content"]',driver)
             #Compensación
             select('//*[@id="__box135-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CCONCEPTO_PAGO'),driver,'//*[@id="__box135-popup-cont"]')
-            time.sleep(2)
+            time.sleep(3)
             fillBoxes('//*[@id="__field0-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CVALOR'),driver)
             select('//*[@id="__box136-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CMONEDA'),driver,'//*[@id="__box136-popup-cont"]')
             select('//*[@id="__box137-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CFRECUENCIA'),driver,'//*[@id="__box137-popup-cont"]')
@@ -265,20 +265,18 @@ async def rpa_main():
             # fillBoxes('//*[@id="__field2-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CVALOR'),driver)
             # select('//*[@id="__box160-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CMONEDA'),driver,'//*[@id="__box160-popup-cont"]')
             # select('//*[@id="__box161-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CFRECUENCIA'),driver,'//*[@id="__box161-popup-cont"]')
-            # 
             time.sleep(5)
             clickBoxes('//*[@id="__button97-BDI-content"]',driver)
-            # time.sleep(1000)
 
             #INSERT
 
             # insert_query = "INSERT INTO tu_tabla (columna1, columna2) VALUES (%s, %s)"
             # data = ()###
-            usu_id = ('COMPLETADO',get_SQL_tbl_rcontratacion[i].get('PKUSU_NCODIGO'))
-            update_query = "UPDATE tbl_rcontratacion SET USU_CESTADO = %s WHERE PKUSU_NCODIGO = %s"
+            
+            # update_query = "UPDATE tbl_rcontratacion SET USU_CESTADO = %s WHERE PKUSU_NCODIGO = %s"
             # await sql_employers(insert_query, data)
+            usu_id = ('COMPLETADO',get_SQL_tbl_rcontratacion[i].get('PKUSU_NCODIGO'))
             await sql_employers(update_query, usu_id)
-
 
             time.sleep(5)
             urlClaro('https://performancemanager8.successfactors.com/xi/ui/peopleprofile/pages/newhire.xhtml?&_s.crb=ZqyrEeSwE4E79Mlg%2fZnj24TSD9WzmnvEGkYupICuREQ%3d',driver)
@@ -286,7 +284,6 @@ async def rpa_main():
 
     except Exception as e:
         usu_id = ('ERROR',get_SQL_tbl_rcontratacion[i].get('PKUSU_NCODIGO'))
-        update_query = "UPDATE tbl_rcontratacion SET USU_CESTADO = %s WHERE PKUSU_NCODIGO = %s"
         await sql_employers(update_query, usu_id)
         print(f"Se ha encontrado un error en rpa_main, debido a: {str(e)}")
         

@@ -4,7 +4,7 @@ const insertInfo = require('../routes/tuya/routProcesos')
 async function validateData(req) {
     try {
         const expectedKeys = [
-            'fechadeingreso', 'empresa', 'motivodelevento', 'plantilla', 'nombres',
+            'empresa', 'motivodelevento', 'plantilla', 'nombres',
             'apellidos', 'trato', 'fechadenacimiento', 'paisdenacimiento',
             'departamentodenacimiento', 'ciudaddenacimiento', 'nombredeusuario',
             'paisdeexpedicion', 'tipodedocumento', 'numerodedocumento', 'esprimario',
@@ -89,49 +89,16 @@ async function validateData(req) {
 async function prepareData(req){
 
     try{
-
-        function formatFecha(fecha) {
-            // Dividir la fecha en día, mes, y año
-            const dateParts = fecha.split('/');
-            const dia = dateParts[0] || '';
-            const mes = dateParts[1] || '';
-            const año = dateParts[2] || '';
-        
-            // Formatear la fecha en el formato deseado: DDMMYYYY
-            return dia.padStart(2, '0') + mes.padStart(2, '0') + año;
-        }
-
-          // Verificar si 'fechadeingreso' existe y es una cadena
-          const fechaIngreso = req['fechadeingreso'] && typeof req['fechadeingreso'] === 'string'
-          ? formatFecha(req['fechadeingreso'])
-          : req['fechadeingreso'];
-
-          const fechadeNacimiento = req['fechadenacimiento'] && typeof req['fechadenacimiento'] === 'string'
-          ? formatFecha(req['fechadenacimiento'])
-          : req['fechadenacimiento'];
-
-          const fechaFinPeriodoDePrueba = req['fechafinperiododeprueba'] && typeof req['fechafinperiododeprueba'] === 'string'
-          ? formatFecha(req['fechafinperiododeprueba'])
-          : req['fechafinperiododeprueba'];
-
-          const fechadeExpedicion = req['fechadeexpedicion'] && typeof req['fechadeexpedicion'] === 'string'
-          ? formatFecha(req['fechadeexpedicion'])
-          : req['fechadeexpedicion'];
-
-          const fechaInicialDeposicion = req['fechainicialdeposicion'] && typeof req['fechainicialdeposicion'] === 'string'
-          ? formatFecha(req['fechainicialdeposicion'])
-          : req['fechainicialdeposicion'];
-
-        
+               
         const dataToInsert = {
-            USU_CFECHA_INGRESO: fechaIngreso,
+            // USU_CFECHA_INGRESO: req['fechadeingreso'],
             USU_CEMPRESA: req.empresa,
             USU_CMOTIVO_EVENTO: req['motivodelevento'],
             USU_CPLANTILLA: req.plantilla, 
             USU_CNOMBRES: req.nombres, 
             USU_CAPELLIDOS: req.apellidos, 
             USU_CTRATO: req.trato, 
-            USU_CFECHA_NACIMIENTO: fechadeNacimiento, 
+            USU_CFECHA_NACIMIENTO: req['fechadenacimiento'], 
             USU_CPAIS_NACIMIENTO: req['paisdenacimiento'],
             USU_CDEPARTAMENTO_NACIMIENTO: req['departamentodenacimiento'], 
             USU_CCIUDAD_NACIMIENTO: req['ciudaddenacimiento'],
@@ -140,7 +107,7 @@ async function prepareData(req){
             USU_CTIPO_DOCUMENTO: req['tipodedocumento'], 
             USU_CNUMERO_DOCUMENTO: req['numerodedocumento'], 
             USU_CES_PRIMARIO: req['esprimario'], 
-            USU_CFECHA_EXPEDICION: fechadeExpedicion, 
+            USU_CFECHA_EXPEDICION: req['fechadeexpedicion'], 
             USU_CDEPARTAMENTO_EXPEDICION: req['departamentodeexpedicion'], 
             USU_CCIUDAD_EXPEDICION: req['ciudaddeexpedicion'], 
             USU_CGENERO: req['genero'],  
@@ -177,7 +144,7 @@ async function prepareData(req){
             USU_CGENERO_FAMILIAR: req['generodelfamiliar'],
             USU_CFECHA_NACIMIENTO_FAMILIAR: req['fechadenacimientodelfamiliar'],
             USU_CPOSICION: req['posicion'],  
-            USU_CFECHA_INICIAL_POSICION: fechaInicialDeposicion,   
+            USU_CFECHA_INICIAL_POSICION:  req['fechainicialdeposicion'],   
             USU_EMPRESA: req.empresa,  
             USU_CDIRECCION_COMITE: req['direccioncomite'],   
             USU_CDIRECCION_AREA: req['direccionarea'], 
@@ -194,7 +161,7 @@ async function prepareData(req){
             USU_CGRUPO_PERSONAL: req['grupodepersonal'],
             USU_CAREA_PERSONAL: req['areadepersonal'],  
             USU_CPERFIL_TIEMPOS: req['perfildetiempos'],    
-            USU_CFECHA_FIN_PERIODO_PRUEBA: fechaFinPeriodoDePrueba,  
+            USU_CFECHA_FIN_PERIODO_PRUEBA: req['fechafinperiododeprueba'],  
             USU_CAPLICA_RED_MAESTRA: req['aplicaredmaestra'],  
             USU_CTIPO_OPERACION: req['tipodeoperacion'],  
             USU_CCANAL: req.canal,  
