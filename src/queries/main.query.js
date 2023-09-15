@@ -4,7 +4,7 @@ const insertInfo = require('../routes/tuya/routProcesos')
 async function validateData(req) {
     try {
         const expectedKeys = [
-            'empresa', 'motivodelevento', 'plantilla', 'nombres',
+            'fechadeingreso','empresa', 'motivodelevento', 'plantilla', 'nombres',
             'apellidos', 'trato', 'fechadenacimiento', 'paisdenacimiento',
             'departamentodenacimiento', 'ciudaddenacimiento', 'nombredeusuario',
             'paisdeexpedicion', 'tipodedocumento', 'numerodedocumento', 'esprimario',
@@ -91,7 +91,7 @@ async function prepareData(req){
     try{
                
         const dataToInsert = {
-            // USU_CFECHA_INGRESO: req['fechadeingreso'],
+            USU_CFECHA_INGRESO: req['fechadeingreso'],
             USU_CEMPRESA: req.empresa,
             USU_CMOTIVO_EVENTO: req['motivodelevento'],
             USU_CPLANTILLA: req.plantilla, 

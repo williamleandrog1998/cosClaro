@@ -105,6 +105,8 @@ async def rpa_main():
             await sql_employers(update_query, usu_id)
 
             #primer stage
+            fecha_ingreso = await excel_date_to_python_date(get_SQL_tbl_rcontratacion[i].get('USU_CFECHA_INGRESO'))
+            fillBoxes('//*[@id="__picker1-inner"]',fecha_ingreso,driver)
             select('//*[@id="__box0-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CEMPRESA'),driver,'//*[@id="__box0-popup-cont"]') 
             select('//*[@id="__box1-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CMOTIVO_EVENTO'),driver,'//*[@id="__box1-popup-cont"]')
             select('//*[@id="__box2-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CPLANTILLA'),driver,'//*[@id="__box2-popup-cont"]')
