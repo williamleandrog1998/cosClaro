@@ -25,7 +25,7 @@ io.on('connection', (socket) => {
   console.log('nueva conexion', socket.id);
   // servidor espera evento que envie el cliente llamado 'client:newnote'
   socket.on('client:newnote', (newNote) => {
-    console.log('El cliente emite esta mondá', newNote);
+    // console.log('El cliente emite esta mondá', newNote);
   });
 
   socket.on('end', () => {
@@ -91,7 +91,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 //Starting server.........................
 app.listen(app.get('port'), () => {
-    console.log('►--<-<-< ◄◄◄ Welcome Roger Rodriguez ►►► >->->--◄');
+    console.log('►--<-<-< ◄◄◄ Welcome ►►► >->->--◄');
     console.log('-<-<-< ◄◄◄ Server running on port', app.get('port'),'►►► >->->-');
 });
 
@@ -106,6 +106,6 @@ exec(`python ${pythonScript}`, (error, stdout, stderr) => {
     console.error(`Error al ejecutar el archivo Python: ${error}`);
     return;
   }
-  console.log(`Salida del archivo Python: ${stdout}`);
+  // console.log(`Salida del archivo Python: ${stdout}`);
 });
 

@@ -445,14 +445,14 @@ async function tablaComent(id, skill, css, tabla_id) {
   if (TABLACOB) {
 
     let id_modal = id;
-    console.log(id_modal);
+    // console.log(id_modal);
     let skill_modal = skill;
-    console.log(skill_modal);
+    // console.log(skill_modal);
     let id_tabla = document.getElementById(css);
     id_tabla.style.backgroundColor='#1e91d7';
 
     let comentarios = await postData("/ver_coment", { radicado: id_modal, canal: skill_modal });
-    console.log(comentarios);
+    // console.log(comentarios);
 
     const tabla_coment = document.querySelector("#"+ tabla_id + " tbody");
     

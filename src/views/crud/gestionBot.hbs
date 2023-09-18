@@ -1,66 +1,39 @@
 <head>
-
     <title>Cargador Base</title>
-
 </head>
 
-<div class="content content-page">
-    <div class="container-fluid m-5">
-        {{!-- Titulo pagina --}}
-        <div class="row">
-            <div class="col-12">
-                <div class="page-title-box">
-                    <h4 class="page-title">Cargador de Archivo (EXCEL)</h4>
+<div class="content content-page border vh-10">
+    <div class="container-fluid">
+        {{> message }}
+        <div class="form-row m-5">
+            <div class="form-group col-12 tts enBlanco exepcion1 border border-danger" style="border-width: 10px;">
+                <h4 class="text-center">SELECCIONE EL ARCHIVO EN FORMATO (EXCEL)</h4>
+                <div class="input-group">
+                    <input type="file" class="form-control-file" name='archivos_excel' id="inpFileEXC">
                 </div>
-            </div>
-        </div>
-
-        <div class="col-12">
-            <div class="container">
-                <div class="card mx-auto">
-                    <div class="card-body">
-                        {{> message }}
-                        <div class="form-row">
-                            <div class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12 tts enBlanco exepcion1"
-                                style="border: #ffcccc 10px outset;">
-                                <h4>
-                                    <center>SELECCIONE EL ARCHIVO EN FORMATO (EXCEL)</center>
-                                </h4>
-                                <div class="input-group">
-                                    <input type="file" class="form-control-file" name='archivos_excel' id="inpFileEXC">
-                                </div>
-                                <br>
-                                <div class="text-center">
-                                    {{!-- <div id="errorContainer">error en las columnas: <p id="errores"></p></div> --}}
-                                    <span class="btn btn-secondary" id="btnRegistrarEXC">
-                                        <i class="far fa-file-excel"></i> Cargar
-                                    </span>
-                                </div>
-                                <br>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
-
-    </div>
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-12 d-flex justify-content-end align-items-center">
-                    <button class="btn btn-robot animate__animated animate__pulse animate-move" id="btnInicioBot">
-                        <i class="fas fa-robot"></i> <!-- Icono de robot, reemplázalo según tu preferencia -->
+                <br>
+                <div class="text-center">
+                    <button class="btn btn-secondary" id="btnRegistrarEXC">
+                        <i class="far fa-file-excel"></i> Cargar
                     </button>
                 </div>
+                <br>
             </div>
         </div>
-
-
-
-
+    </div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12 d-flex justify-content-end align-items-center">
+                <button class="btn btn-robot animate__animated animate__pulse animate-move" id="btnInicioBot">
+                    <i class="fas fa-robot"></i> <!-- Icono de robot, reemplázalo según tu preferencia -->
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
+
+
+
 
 
 <div class="modal" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">

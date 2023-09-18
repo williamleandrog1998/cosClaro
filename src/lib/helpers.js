@@ -31,7 +31,7 @@ helpers.obtain = (obj,name) =>{
         if(key == name){
           let split = value.split(",")
           if (split.includes("OU=Laika") || split.includes("OU=RPA")){
-            console.log(split)
+            // console.log(split)
             split2 = helpers.filterItems(split, 'CN')
             let nombre = (split2[0].split("="))[1]
             var result = {

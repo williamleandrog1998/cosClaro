@@ -21,9 +21,21 @@ router.get('/gestionBot', isLoggedIn, async (req, res) => {
 router.get('/status', isLoggedIn, async (req, res) => {
     try {
         if (req.user.USU_CROL == "Administrador" || req.user.USU_CROL == "Gestor") {
-            const users = await pool.query('SELECT * FROM tbl_rcontratacion');
-            // const responsable = await pool.query('SELECT USU_CRESPONSABLE_GESTION FROM tbl_rusuarios');
+            const users = await pool.query('SELECT * FROM tbl_rcontratacion ORDER BY USU_CFECHA_GESTION DESC');
             res.render('tuya/status', {users});
+         }  else {
+            res.redirect('/redirect');
+        } 
+    } catch (error) {
+        res.render('401');
+    }
+});
+
+router.get('/logsSystem', isLoggedIn, async (req, res) => {
+    try {
+        if (req.user.USU_CROL == "Administrador" || req.user.USU_CROL == "Gestor") {
+            const logs = await pool.query('SELECT * FROM tbl_rlog_detalle ORDER BY LOG_CFECHA_REGISTRO DESC');
+            res.render('tuya/logs', {logs});
          }  else {
             res.redirect('/redirect');
         } 

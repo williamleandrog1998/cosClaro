@@ -251,7 +251,7 @@ function modeloGana() {
 
     const ModeloGanaClaro = document.querySelectorAll('.modelo-Gana');
             
-    console.log(ModeloGanaClaro.length);
+    // console.log(ModeloGanaClaro.length);
 
     ModeloGanaClaro.forEach(element => {
         element.classList.remove('d-none');
@@ -499,8 +499,8 @@ function submitComent(id_form, id) {
 
     async function fntguardar() {
         let strComent = document.getElementById('txtcomentario_back_' + id).value;
-        console.log(strComent);
-        console.log('Guardar datos...');
+        // console.log(strComent);
+        // console.log('Guardar datos...');
         if (strComent === "") {
             Swal.fire({
                 position: "center",
@@ -512,7 +512,6 @@ function submitComent(id_form, id) {
             return;
         }
         else {
-            console.log('paso');
             let canal = document.getElementById('txtskill_coment_' + id).value;
             let caso = document.getElementById('txtid_coment_' + id).value;
             let area = document.getElementById('txtarea_gestion_coment_' + id).value;
@@ -529,7 +528,6 @@ function submitComent(id_form, id) {
                 usuario_red_coment: user,
                 comentario_back_coment: coment
             });
-            console.log('Aqui estoy', res.insertId);
             if (res.insertId) {
             
                 Swal.fire({
@@ -557,10 +555,7 @@ function submitComent(id_form, id) {
 }
 
 async function deleteLinea(idDelete){
-    console.log(idDelete)
     let res = await postData("/deleteLinea", {id: idDelete });
-    console.log('Procesando...');
-    console.log(res)
     if (res.result == 1) {
         document.getElementById('containerLoader').classList.add('hidden');
         Swal.fire({
