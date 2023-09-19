@@ -7,6 +7,11 @@ let inpFileEXC = document.querySelector("#inpFileEXC");
 let textError = document.getElementById("errores")
 let errorContainer = document.getElementById("errorContainer")
 let successModalLabel = document.getElementById("successModalLabel")
+// const {setTimeout} = require('timers/promises')
+
+// async function delay(ms){
+//   await setTimeout(ms)
+// }
 
 // -----------------------------------
 
@@ -19,6 +24,7 @@ inpFileEXC.addEventListener("change", async () => {
 
 btnRegistrarEXC.addEventListener("click", async () => {
   
+  
   document.getElementById("containerLoader").classList.remove("hidden");
   // errorContainer.classList.add("d-none")
 
@@ -26,8 +32,6 @@ btnRegistrarEXC.addEventListener("click", async () => {
     const file = inpFileEXC.files[0]
     const formData = new FormData()
     formData.append('archivos_excel', file)
-
-    //peticion POST
     
     fetch('/cargar',{
       method: 'POST',
@@ -36,7 +40,9 @@ btnRegistrarEXC.addEventListener("click", async () => {
     .then(response => response.json())
     .then(data => {
       try{
+        
         let messageModal = data.message
+        let employes = data.employes
       // console.log(messageModal.missingKeys.length)
 
       if(data.message.missingKeys && data.message.missingKeys.length){
@@ -61,7 +67,7 @@ btnRegistrarEXC.addEventListener("click", async () => {
       }else{
         $(document).ready(function () {
 
-          successModalLabel.textContent = messageModal
+          successModalLabel.textContent = `${messageModal}`
           $("#successModal").modal("show");
           $("#successModal").on("hidden.bs.modal", function () {
 
@@ -74,5 +80,6 @@ btnRegistrarEXC.addEventListener("click", async () => {
       }
     })
   }
-
+  // await delay(1000);
+  // location.reload();
 });

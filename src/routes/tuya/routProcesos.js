@@ -10,6 +10,7 @@ const axios = require('axios');
 const file_upload = fileUpload();
 const sentences = require('../../queries/main.query');
 const { rejects } = require("assert");
+const { query } = require("express");
 
 router.post("/cargar", isLoggedIn, file_upload, async (req, res) => {
     if (!req.files || !req.files.archivos_excel) {
@@ -41,7 +42,7 @@ router.post("/cargar", isLoggedIn, file_upload, async (req, res) => {
                     const exitEmpleoyer = await getEmployes(isValid.data)
 
                     if (exitEmpleoyer) {
-                        return res.status(200).json({ message: 'El archivo se ha subido satisfactoriamente.' });
+                        return res.status(200).json({ message: 'El archivo se ha subido satisfactoriamente.', employes: isValid.data.length});
                     }else{
                         return res.status(500).json({ message: 'Error al cargar el archivo, verifica que sea el apropiado.' });
                     } 
@@ -64,7 +65,7 @@ async function getEmployes(data){
 
         for (let i = 0; i < data.length; i++) {
 
-            const query = "SELECT USU_CNUMERO_DOCUMENTO FROM tbl_rcontratacion WHERE USU_CNUMERO_DOCUMENTO = ?";
+            let query = "SELECT USU_CNUMERO_DOCUMENTO FROM tbl_rcontratacion WHERE USU_CNUMERO_DOCUMENTO = ?";
             const ccEmployer = data[i].numerodedocumento              
             const selectPromise = new Promise((resolve, reject) => {
                 pool.query(query, ccEmployer, async (error, results) => {

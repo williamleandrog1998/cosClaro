@@ -104,6 +104,13 @@ async def error_in_process(driver,text,xpath):
 
 async def rpa_main():
     try:
+         ##sentences
+        insert_query = "INSERT INTO tbl_rlog_detalle (LOG_NAME_BOT, LOG_MENSSAJE) VALUES (%s,%s)"
+        update_query = "UPDATE tbl_rcontratacion SET USU_CESTADO = %s WHERE PKUSU_NCODIGO = %s"
+        update_status_bot ="UPDATE tbl_rbot_status SET BOT_STATUS = %s WHERE PKBOT_NCODIGO = %s"
+        bot_id = ('ON',1)
+        await sql_employers(update_status_bot, bot_id)
+
         credencials = await main()
         dataCredential ={
             "userName": credencials[2],
@@ -114,9 +121,7 @@ async def rpa_main():
         driver = configure_webdriver()
         urlClaro(dataCredential['urlClaro'],driver)
 
-        ##sentences
-        insert_query = "INSERT INTO tbl_rlog_detalle (LOG_NAME_BOT, LOG_MENSSAJE) VALUES (%s,%s)"
-        update_query = "UPDATE tbl_rcontratacion SET USU_CESTADO = %s WHERE PKUSU_NCODIGO = %s"
+
 
         # desired_content = claro_web_session(driver)
         fillBoxes('//*[@id="__input1-inner"]',dataCredential['userName'],driver)#input
@@ -127,10 +132,10 @@ async def rpa_main():
             logs =('code01','Fallo inicio de sesión en la plataforma SuccessFactory')
             await sql_employers(insert_query, logs)
         else:
-            time.sleep(5)
-            urlClaro('https://performancemanager8.successfactors.com/xi/ui/peopleprofile/pages/newhire.xhtml?&_s.crb=ZqyrEeSwE4E79Mlg%2fZnj24TSD9WzmnvEGkYupICuREQ%3d',driver)
             logs =('code02','Correcto inicio de sesión en la plataforma SuccessFactory')
             await sql_employers(insert_query, logs)
+            time.sleep(5)
+            urlClaro('https://performancemanager8.successfactors.com/xi/ui/peopleprofile/pages/newhire.xhtml?&_s.crb=ZqyrEeSwE4E79Mlg%2fZnj24TSD9WzmnvEGkYupICuREQ%3d',driver)
 
             get_SQL_tbl_rcontratacion = await get_employes("SELECT * FROM tbl_rcontratacion WHERE USU_CESTADO = 'NO_INICIADO'")
                 
@@ -174,7 +179,7 @@ async def rpa_main():
                 time.sleep(1)
                 select('//*[@id="__box14-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CCIUDAD_EXPEDICION'),driver,'//*[@id="__box14-popup-cont"]')
                 clickBoxes('//*[@id="__button25-BDI-content"]',driver)
-                logs =('code31',str(get_SQL_tbl_rcontratacion[i].get('USU_CNUMERO_DOCUMENTO'))+' primera fase completada!')
+                logs =('code31',str(get_SQL_tbl_rcontratacion[i].get('USU_CNUMERO_DOCUMENTO'))+' Información biográfica y de empleado completada!')
                 await sql_employers(insert_query, logs)
 
                 if await error_in_process(driver,'El empleado o empleados siguientes coinciden con los datos que ha introducido en la Información de identificación.','//*[@id="__text25"]'):
@@ -200,6 +205,8 @@ async def rpa_main():
                     fillBoxes('//*[@id="__input26-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CCORREO'),driver)
                     select('//*[@id="__box36-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_ES_PRIMARIO'),driver,'//*[@id="__box36-popup-cont"]')
                     clickBoxes('//*[@id="__button57-BDI-content"]',driver) 
+                    logs =('code32',str(get_SQL_tbl_rcontratacion[i].get('USU_CNUMERO_DOCUMENTO'))+' Información personal y correo electronico completada!')
+                    await sql_employers(insert_query, logs)
                     # #Información del telefono
                     select('//*[@id="__box37-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CTIPO_TELEFONO'),driver,'//*[@id="__box37-popup-cont"]')
                     fillBoxes('//*[@id="__input29-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CNUMERO_TELEFONO'),driver)
@@ -214,6 +221,8 @@ async def rpa_main():
                     estrato('//*[@id="__box33-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CESTRATO'),driver)
                     select('//*[@id="__box34-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CTIPO_VIVIENDA'),driver,'//*[@id="__box34-popup-cont"]')
                     clickBoxes('//*[@id="__button52-content"]',driver)
+                    logs =('code33',str(get_SQL_tbl_rcontratacion[i].get('USU_CNUMERO_DOCUMENTO'))+' Información de telefono y direcciones completada!')
+                    await sql_employers(insert_query, logs)
                     # #Contacto de emergencia
                     fillBoxes('//*[@id="__input33-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CCONTACTO_EMERGENCIA'),driver) 
 
@@ -240,6 +249,8 @@ async def rpa_main():
                     fecha_nacimiento = await excel_date_to_python_date(get_SQL_tbl_rcontratacion[i].get('USU_CFECHA_NACIMIENTO_FAMILIAR'))
                     fillBoxes('//*[@id="__picker9-inner"]',fecha_nacimiento,driver)
                     clickBoxes('//*[@id="__button54-BDI-content"]',driver) 
+                    logs =('code34',str(get_SQL_tbl_rcontratacion[i].get('USU_CNUMERO_DOCUMENTO'))+' Contacto de emergencia e información familiar completada!')
+                    await sql_employers(insert_query, logs)
                     #Posición destino
                     select('//*[@id="__box51-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CPOSICION'),driver,'//*[@id="__box51-popup-cont"]')
                     time.sleep(3)
@@ -279,6 +290,8 @@ async def rpa_main():
                     select('//*[@id="__box114-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CTIPO_RELACION'),driver,'//*[@id="__box114-popup-cont"]')
                     select('//*[@id="__input90-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CNOMBRE_RELACION'),driver,'//*[@id="__input90-popup-cont"]')
                     clickBoxes('//*[@id="__button84-BDI-content"]',driver)
+                    logs =('code35',str(get_SQL_tbl_rcontratacion[i].get('USU_CNUMERO_DOCUMENTO'))+' Información del puesto completada!')
+                    await sql_employers(insert_query, logs)
                     # #Perfil de accesps/familia
                     select('//*[@id="__box117-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CES_NUEVO_PERFIL'),driver,'//*[@id="__box117-popup-cont"]')
                     clickBoxes('//*[@id="__button94-BDI-content"]',driver)
@@ -307,6 +320,8 @@ async def rpa_main():
                     select('//*[@id="__box137-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CMONEDA'),driver,'//*[@id="__box137-popup-cont"]')
                     time.sleep(1)
                     select('//*[@id="__box138-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CFRECUENCIA'),driver,'//*[@id="__box138-popup-cont"]')
+                    logs =('code36',str(get_SQL_tbl_rcontratacion[i].get('USU_CNUMERO_DOCUMENTO'))+' Información de compensación completada!')
+                    await sql_employers(insert_query, logs)
                     time.sleep(5)
                     clickBoxes('//*[@id="__button100-BDI-content"]',driver)
                     if await error_in_process(driver,"Error : Está ingresando una fecha extemporánea, recuerde que los Ingresos o reingresos no se realizan en fechas posteriores al día de hoy",'//*[@id="__html17"]'):
@@ -316,20 +331,19 @@ async def rpa_main():
                         clickBoxes('//*[@id="__mbox-btn-0-BDI-content"]',driver)#cerrar
                         usu_id = ('ERROR',get_SQL_tbl_rcontratacion[i].get('PKUSU_NCODIGO'))
                         await sql_employers(update_query, usu_id)
-                        time.sleep(20)
-                        # clickBoxes('//*[@id="__mbox-btn-0-BDI-content"]',driver)#alert
+                        time.sleep(5)
                         urlClaro('https://performancemanager8.successfactors.com/xi/ui/peopleprofile/pages/newhire.xhtml?&_s.crb=ZqyrEeSwE4E79Mlg%2fZnj24TSD9WzmnvEGkYupICuREQ%3d',driver)
-                        time.sleep(30)
+                        time.sleep(5)
                     else:
                         logs =('code011',str(get_SQL_tbl_rcontratacion[i].get('USU_CNUMERO_DOCUMENTO'))+' Se ha registrado correctamente.')
                         await sql_employers(insert_query, logs)
-                        urlClaro('https://performancemanager8.successfactors.com/xi/ui/peopleprofile/pages/newhire.xhtml?&_s.crb=ZqyrEeSwE4E79Mlg%2fZnj24TSD9WzmnvEGkYupICuREQ%3d',driver)
                         usu_id = ('COMPLETADO',get_SQL_tbl_rcontratacion[i].get('PKUSU_NCODIGO'))
                         await sql_employers(update_query, usu_id)
+                        time.sleep(5)
+                        urlClaro('https://performancemanager8.successfactors.com/xi/ui/peopleprofile/pages/newhire.xhtml?&_s.crb=ZqyrEeSwE4E79Mlg%2fZnj24TSD9WzmnvEGkYupICuREQ%3d',driver)
                         time.sleep(5)  
 ########################################################################################################################################################################################
                 else:
-                    print('bueno')
                     select('//*[@id="__box15-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CGENERO'),driver,'//*[@id="__box15-popup-cont"]')
                     select('//*[@id="__box16-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CESTADO_CIVIL'),driver,'//*[@id="__box16-popup-cont"]')     
                     select('//*[@id="__box17-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CNACIONALIDAD'),driver,'//*[@id="__box17-popup-cont"]')
@@ -338,13 +352,15 @@ async def rpa_main():
                     fillBoxes('//*[@id="__input14-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CCONFIGURACION_REGIONAL_PREDETERMINADA'),driver)
                     select('//*[@id="__box23-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CMODO_DESPLAZAMIENTO_CASA_TRABAJO_CASA'),driver,'//*[@id="__box23-popup-cont"]')
 
-
                     select('//*[@id="__box24-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CPAIS_REGION'),driver,'//*[@id="__box24-popup-cont"]')
                     # #Información correo electrónico
                     select('//*[@id="__box34-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CTIPO_CORREO'),driver,'//*[@id="__box34-popup-cont"]')
                     fillBoxes('//*[@id="__input26-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CCORREO'),driver)
                     select('//*[@id="__box35-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_ES_PRIMARIO'),driver,'//*[@id="__box35-popup-cont"]')
                     clickBoxes('//*[@id="__button54-BDI-content"]',driver) 
+
+                    logs =('code32',str(get_SQL_tbl_rcontratacion[i].get('USU_CNUMERO_DOCUMENTO'))+' Información personal y correo electronico completada!')
+                    await sql_employers(insert_query, logs)
                     # #Información del telefono
                     select('//*[@id="__box36-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CTIPO_TELEFONO'),driver,'//*[@id="__box36-popup-cont"]')
                     fillBoxes('//*[@id="__input29-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CNUMERO_TELEFONO'),driver)
@@ -355,10 +371,12 @@ async def rpa_main():
                     select('//*[@id="__box30-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CDEPARTAMENTO'),driver,'//*[@id="__box30-popup-cont"]')
                     time.sleep(1.5)
                     select('//*[@id="__box31-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CCIUDAD'),driver,'//*[@id="__box31-popup-cont"]')
-                    # strat_num=int(strat)
                     estrato('//*[@id="__box32-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CESTRATO'),driver)
                     select('//*[@id="__box33-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CTIPO_VIVIENDA'),driver,'//*[@id="__box33-popup-cont"]')
                     clickBoxes('//*[@id="__button49-content"]',driver)
+
+                    logs =('code33',str(get_SQL_tbl_rcontratacion[i].get('USU_CNUMERO_DOCUMENTO'))+' Información de telefono y direcciones completada!')
+                    await sql_employers(insert_query, logs)
                     # #Contacto de emergencia
                     fillBoxes('//*[@id="__input33-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CCONTACTO_EMERGENCIA'),driver) 
                     select('//*[@id="__box38-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CPARENTESCO_EMERGENCIA'),driver,'//*[@id="__box38-popup-cont"]')
@@ -384,6 +402,9 @@ async def rpa_main():
                     fecha_nacimiento = await excel_date_to_python_date(get_SQL_tbl_rcontratacion[i].get('USU_CFECHA_NACIMIENTO_FAMILIAR'))
                     fillBoxes('//*[@id="__picker9-inner"]',fecha_nacimiento,driver)
                     clickBoxes('//*[@id="__button51-BDI-content"]',driver) 
+
+                    logs =('code34',str(get_SQL_tbl_rcontratacion[i].get('USU_CNUMERO_DOCUMENTO'))+' Contacto de emergencia e información familiar completada!')
+                    await sql_employers(insert_query, logs)
                     #Posición destino
                     select('//*[@id="__box50-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CPOSICION'),driver,'//*[@id="__box50-popup-cont"]')
                     time.sleep(3)
@@ -423,10 +444,13 @@ async def rpa_main():
                     select('//*[@id="__box113-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CTIPO_RELACION'),driver,'//*[@id="__box113-popup-cont"]')
                     select('//*[@id="__input90-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CNOMBRE_RELACION'),driver,'//*[@id="__input90-popup-cont"]')
                     clickBoxes('//*[@id="__button81-BDI-content"]',driver)
+                    logs =('code35',str(get_SQL_tbl_rcontratacion[i].get('USU_CNUMERO_DOCUMENTO'))+' Información del puesto completada!')
+                    await sql_employers(insert_query, logs)
                     # #Perfil de accesps/familia
                     select('//*[@id="__box116-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CES_NUEVO_PERFIL'),driver,'//*[@id="__box116-popup-cont"]')
                     clickBoxes('//*[@id="__button91-BDI-content"]',driver)
-                    # #INFORMACION Conpensacion
+                    
+                    # #INFORMACION Compensacion
                     select('//*[@id="__box119-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CAREA_NOMINA'),driver,'//*[@id="__box119-popup-cont"]')
                     select('//*[@id="__box120-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CES_ELEGIBLE_BENEFICIOS'),driver,'//*[@id="__box119-popup-cont"]')
                     select('//*[@id="__box121-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CPERTENECE_SINDICATO'),driver,'//*[@id="__box121-popup-cont"]')
@@ -450,6 +474,8 @@ async def rpa_main():
                     select('//*[@id="__box136-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CMONEDA'),driver,'//*[@id="__box136-popup-cont"]')
                     time.sleep(1)
                     select('//*[@id="__box137-inner"]',get_SQL_tbl_rcontratacion[i].get('USU_CFRECUENCIA'),driver,'//*[@id="__box137-popup-cont"]')
+                    logs =('code36',str(get_SQL_tbl_rcontratacion[i].get('USU_CNUMERO_DOCUMENTO'))+' Información de compensación completada!')
+                    await sql_employers(insert_query, logs)
                     time.sleep(5)
                     clickBoxes('//*[@id="__button97-BDI-content"]',driver)
                     if await error_in_process(driver,"Error : Está ingresando una fecha extemporánea, recuerde que los Ingresos o reingresos no se realizan en fechas posteriores al día de hoy",'//*[@id="__html17"]'):
@@ -459,7 +485,7 @@ async def rpa_main():
                         clickBoxes('//*[@id="__mbox-btn-0-BDI-content"]',driver)
                         usu_id = ('ERROR',get_SQL_tbl_rcontratacion[i].get('PKUSU_NCODIGO'))
                         await sql_employers(update_query, usu_id)
-                        time.sleep(1)
+                        time.sleep(5)
                         urlClaro('https://performancemanager8.successfactors.com/xi/ui/peopleprofile/pages/newhire.xhtml?&_s.crb=ZqyrEeSwE4E79Mlg%2fZnj24TSD9WzmnvEGkYupICuREQ%3d',driver)
                         time.sleep(5) 
                     else:
@@ -467,6 +493,7 @@ async def rpa_main():
                         await sql_employers(update_query, usu_id)
                         logs =('code011',str(get_SQL_tbl_rcontratacion[i].get('USU_CNUMERO_DOCUMENTO'))+' Se ha registrado correctamente.')
                         await sql_employers(insert_query, logs)
+                        time.sleep(5)
                         urlClaro('https://performancemanager8.successfactors.com/xi/ui/peopleprofile/pages/newhire.xhtml?&_s.crb=ZqyrEeSwE4E79Mlg%2fZnj24TSD9WzmnvEGkYupICuREQ%3d',driver)
                         time.sleep(5)    
 
@@ -480,6 +507,10 @@ async def rpa_main():
     #     # a = 1;
         
     finally:
+        logs =('code09',' Se ha finalizado con el registro de los colaboradores')
+        await sql_employers(insert_query, logs)
+        bot_id = ('OFF',1)
+        await sql_employers(update_status_bot, bot_id)
         driver.quit()
 
 if __name__ == "__main__":
@@ -490,4 +521,5 @@ if __name__ == "__main__":
 #     asyncio.run(rpa_main())
 
 
-
+# El nombre del usuario ya existe. Introduzca un nuevo valor exclusivo.
+# //*[@id="__html0"]
